@@ -1,14 +1,15 @@
-use crate::{address::Address, errors::ReceiveError, message::Message};
+use crate::{address::Address, errors::ReceiveError};
 use futures::{channel::mpsc, StreamExt};
+use std::future::Future;
 
+// TODO: `stop` request should be supported
 #[derive(Debug)]
-pub struct Mailbox<Input, Output> {
-    receiver: mpsc::Receiver<Message<Input, Output>>,
-
-    address: Address<Input, Output>,
+pub struct Mailbox<Input> {
+    receiver: mpsc::Receiver<Input>,
+    address: Address<Input>,
 }
 
-impl<Input, Output> Mailbox<Input, Output> {
+impl<Input> Mailbox<Input> {
     pub fn new() -> Self {
         // TODO limit should be configurable
         let (sender, receiver) = mpsc::channel(128);
@@ -18,15 +19,29 @@ impl<Input, Output> Mailbox<Input, Output> {
         Self { receiver, address }
     }
 
-    pub fn address(&self) -> Address<Input, Output> {
+    pub fn address(&self) -> Address<Input> {
         self.address.clone()
     }
 
-    pub async fn receive(&mut self) -> Result<Message<Input, Output>, ReceiveError> {
+    pub async fn receive(&mut self) -> Result<Input, ReceiveError> {
         if let Some(message) = self.receiver.next().await {
             Ok(message)
         } else {
             Err(ReceiveError::AllSendersDisconnected)
         }
+    }
+
+    // TODO: `self` is not required as an argument, maybe make it an external function?
+    pub async fn run_with<F, Fut>(mut self, mut handler: F) -> Result<(), ReceiveError>
+    where
+        F: FnMut(&mut Self, Input) -> Fut,
+        Fut: Future<Output = ()>,
+    {
+        // TODO: There should be a possibility to stop mailbox.
+        while let Some(message) = self.receiver.next().await {
+            handler(&mut self, message).await;
+        }
+
+        Err(ReceiveError::AllSendersDisconnected)
     }
 }

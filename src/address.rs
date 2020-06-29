@@ -1,12 +1,12 @@
-use crate::{errors::SendError, message::Message};
+use crate::errors::SendError;
 use futures::{channel::mpsc, SinkExt};
 
 #[derive(Debug)]
-pub struct Address<Input, Output> {
-    sender: mpsc::Sender<Message<Input, Output>>,
+pub struct Address<Input> {
+    sender: mpsc::Sender<Input>,
 }
 
-impl<Input, Output> Clone for Address<Input, Output> {
+impl<Input> Clone for Address<Input> {
     fn clone(&self) -> Self {
         Self {
             sender: self.sender.clone(),
@@ -14,28 +14,14 @@ impl<Input, Output> Clone for Address<Input, Output> {
     }
 }
 
-impl<Input, Output> Address<Input, Output> {
-    pub(crate) fn new(sender: mpsc::Sender<Message<Input, Output>>) -> Self {
+impl<Input> Address<Input> {
+    pub(crate) fn new(sender: mpsc::Sender<Input>) -> Self {
         Self { sender }
     }
 
-    pub async fn request(&mut self, message: Input) -> Result<Output, SendError> {
-        let (wrapped, receiver) = Message::request(message);
+    pub async fn send(&mut self, message: Input) -> Result<(), SendError> {
         self.sender
-            .send(wrapped)
-            .await
-            .map_err(|_| SendError::ReceiverDisconnected)?;
-
-        let response = receiver
-            .await
-            .map_err(|_| SendError::ReceiverDisconnected)?;
-        Ok(response)
-    }
-
-    pub async fn notify(&mut self, message: Input) -> Result<(), SendError> {
-        let wrapped = Message::notification(message);
-        self.sender
-            .send(wrapped)
+            .send(message)
             .await
             .map_err(|_| SendError::ReceiverDisconnected)?;
 
