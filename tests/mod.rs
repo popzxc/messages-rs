@@ -6,7 +6,7 @@ fn message_box() {
     let mut basic_rt = Builder::new().basic_scheduler().build().unwrap();
 
     basic_rt.block_on(async {
-        let handler = |_mailbox: &mut Mailbox<Request<i32, i32>>, request: Request<i32, i32>| async move {  
+        let handler = |request: Request<i32, i32>| async move {
             let response = *request.inner() + 1;
 
             request.respond(response).await.unwrap();

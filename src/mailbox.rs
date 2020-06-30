@@ -31,15 +31,14 @@ impl<Input> Mailbox<Input> {
         }
     }
 
-    // TODO: `self` is not required as an argument, maybe make it an external function?
     pub async fn run_with<F, Fut>(mut self, mut handler: F) -> Result<(), ReceiveError>
     where
-        F: FnMut(&mut Self, Input) -> Fut,
+        F: FnMut(Input) -> Fut,
         Fut: Future<Output = ()>,
     {
         // TODO: There should be a possibility to stop mailbox.
         while let Some(message) = self.receiver.next().await {
-            handler(&mut self, message).await;
+            handler(message).await;
         }
 
         Err(ReceiveError::AllSendersDisconnected)
