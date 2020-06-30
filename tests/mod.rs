@@ -1,4 +1,4 @@
-use messages::{mailbox::Mailbox, request::Request};
+use messages::{Mailbox, Request};
 use tokio::runtime::Builder;
 
 #[test]
