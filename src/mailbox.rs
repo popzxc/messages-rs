@@ -2,6 +2,7 @@ use crate::{
     address::{Address, Message},
     errors::ReceiveError,
 };
+use anyhow::Result;
 use futures::{channel::mpsc, StreamExt};
 use std::future::Future;
 
@@ -25,18 +26,18 @@ impl<Input> Mailbox<Input> {
         self.address.clone()
     }
 
-    pub async fn receive(&mut self) -> Result<Input, ReceiveError> {
+    pub async fn receive(&mut self) -> Result<Input> {
         if let Some(message) = self.receiver.next().await {
             match message {
                 Message::Message(input) => Ok(input),
-                Message::StopRequest => Err(ReceiveError::Stopped),
+                Message::StopRequest => Err(ReceiveError::Stopped)?,
             }
         } else {
-            Err(ReceiveError::AllSendersDisconnected)
+            Err(ReceiveError::AllSendersDisconnected)?
         }
     }
 
-    pub async fn run_with<F, Fut>(mut self, mut handler: F) -> Result<(), ReceiveError>
+    pub async fn run_with<F, Fut>(mut self, mut handler: F) -> Result<()>
     where
         F: FnMut(Input) -> Fut,
         Fut: Future<Output = ()>,
@@ -53,6 +54,6 @@ impl<Input> Mailbox<Input> {
             }
         }
 
-        Err(ReceiveError::AllSendersDisconnected)
+        Err(ReceiveError::AllSendersDisconnected)?
     }
 }

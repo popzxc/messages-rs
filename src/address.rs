@@ -1,6 +1,8 @@
 use crate::errors::SendError;
 use futures::{channel::mpsc, SinkExt};
 
+use anyhow::Result;
+
 #[derive(Debug)]
 pub(crate) enum Message<Input> {
     Message(Input),
@@ -31,7 +33,7 @@ impl<Input> Address<Input> {
         Self { sender }
     }
 
-    pub async fn send(&mut self, message: Input) -> Result<(), SendError> {
+    pub async fn send(&mut self, message: Input) -> Result<()> {
         self.sender
             .send(message.into())
             .await
@@ -40,7 +42,7 @@ impl<Input> Address<Input> {
         Ok(())
     }
 
-    pub async fn stop(&mut self) -> Result<(), SendError> {
+    pub async fn stop(&mut self) -> Result<()> {
         self.sender
             .send(Message::StopRequest)
             .await

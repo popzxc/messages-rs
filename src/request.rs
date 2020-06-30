@@ -1,4 +1,5 @@
 use crate::errors::SendError;
+use anyhow::Result;
 use futures::channel::oneshot;
 
 #[derive(Debug)]
@@ -23,7 +24,11 @@ impl<Input, Output> Request<Input, Output> {
         &self.message
     }
 
-    pub async fn respond(self, output: Output) -> Result<(), SendError> {
+    pub fn into_inner(self) -> (Input, oneshot::Sender<Output>) {
+        (self.message, self.respond_channel)
+    }
+
+    pub async fn respond(self, output: Output) -> Result<()> {
         self.respond_channel
             .send(output)
             .map_err(|_| SendError::ReceiverDisconnected)?;
