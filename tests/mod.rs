@@ -16,12 +16,16 @@ fn message_box() {
 
         let mut address = mailbox.address();
 
-        tokio::spawn(mailbox.run_with(handler));
+        let future = tokio::spawn(mailbox.run_with(handler));
 
         let (request, response) = Request::new(10);
         address.send(request).await.unwrap();
 
         let response = response.await.unwrap();
         assert_eq!(response, 11);
+
+        address.stop().await.unwrap();
+
+        assert!(future.await.is_ok());
     });
 }

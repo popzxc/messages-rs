@@ -1,11 +1,13 @@
-use crate::{address::Address, errors::ReceiveError};
+use crate::{
+    address::{Address, Message},
+    errors::ReceiveError,
+};
 use futures::{channel::mpsc, StreamExt};
 use std::future::Future;
 
-// TODO: `stop` request should be supported
 #[derive(Debug)]
 pub struct Mailbox<Input> {
-    receiver: mpsc::Receiver<Input>,
+    receiver: mpsc::Receiver<Message<Input>>,
     address: Address<Input>,
 }
 
@@ -25,7 +27,10 @@ impl<Input> Mailbox<Input> {
 
     pub async fn receive(&mut self) -> Result<Input, ReceiveError> {
         if let Some(message) = self.receiver.next().await {
-            Ok(message)
+            match message {
+                Message::Message(input) => Ok(input),
+                Message::StopRequest => Err(ReceiveError::Stopped),
+            }
         } else {
             Err(ReceiveError::AllSendersDisconnected)
         }
@@ -38,7 +43,14 @@ impl<Input> Mailbox<Input> {
     {
         // TODO: There should be a possibility to stop mailbox.
         while let Some(message) = self.receiver.next().await {
-            handler(message).await;
+            match message {
+                Message::Message(data) => {
+                    handler(data).await;
+                }
+                Message::StopRequest => {
+                    return Ok(());
+                }
+            }
         }
 
         Err(ReceiveError::AllSendersDisconnected)

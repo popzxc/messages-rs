@@ -7,4 +7,5 @@ pub enum SendError {
 #[derive(Debug)]
 pub enum ReceiveError {
     AllSendersDisconnected,
+    Stopped,
 }
