@@ -10,4 +10,4 @@ thiserror = "1.0"
 anyhow = "1.0"
 
 [dev-dependencies]
-tokio = { version = "0.2.21", features = ["rt-core"] }
+tokio = { version = "0.2.21", features = ["full"] }
