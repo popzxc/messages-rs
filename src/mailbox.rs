@@ -6,6 +6,8 @@ use anyhow::Result;
 use futures::{channel::mpsc, StreamExt};
 use std::future::Future;
 
+pub const DEFAULT_CAPACITY: usize = 128;
+
 #[derive(Debug)]
 pub struct Mailbox<Input> {
     receiver: mpsc::Receiver<Message<Input>>,
@@ -14,8 +16,11 @@ pub struct Mailbox<Input> {
 
 impl<Input> Mailbox<Input> {
     pub fn new() -> Self {
-        // TODO limit should be configurable
-        let (sender, receiver) = mpsc::channel(128);
+        Self::with_capacity(DEFAULT_CAPACITY)
+    }
+
+    pub fn with_capacity(capacity: usize) -> Self {
+        let (sender, receiver) = mpsc::channel(capacity);
 
         let address = Address::new(sender);
 
@@ -42,7 +47,6 @@ impl<Input> Mailbox<Input> {
         F: FnMut(Input) -> Fut,
         Fut: Future<Output = ()>,
     {
-        // TODO: There should be a possibility to stop mailbox.
         while let Some(message) = self.receiver.next().await {
             match message {
                 Message::Message(data) => {
