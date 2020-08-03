@@ -3,6 +3,8 @@ use futures::{channel::mpsc, SinkExt};
 
 use anyhow::Result;
 
+/// Internal wrapper over sent messages with additional types
+/// of requests.
 #[derive(Debug)]
 pub(crate) enum Message<Input> {
     Message(Input),
