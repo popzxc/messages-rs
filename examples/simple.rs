@@ -1,3 +1,6 @@
+//! This example implements a simple service that responds to the incoming messages.
+//! Unlike `simple.rs`, this example is build atop of the `messages` crate.
+
 use anyhow::Result;
 use messages::{Mailbox, Request, Address};
 use std::sync::atomic::{AtomicU64, Ordering};
