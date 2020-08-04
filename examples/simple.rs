@@ -2,7 +2,7 @@
 //! Unlike `simple.rs`, this example is build atop of the `messages` crate.
 
 use anyhow::Result;
-use messages::{Mailbox, Request, Address};
+use messages::{Address, Mailbox, Request};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 #[derive(Debug)]
@@ -31,18 +31,22 @@ impl Service {
 
     pub async fn run(self) -> Result<()> {
         let value = self.value;
-        self.mailbox.run_with(|msg| async {
-            match msg {
-                ServiceMessage::Notification(new_value) => {
-                    value.store(new_value, Ordering::SeqCst);
-                }
-                ServiceMessage::Request(request) => {
-                    let response_value = *request.message() + value.load(Ordering::SeqCst);
+        self.mailbox
+            .run_with(|msg| async {
+                match msg {
+                    ServiceMessage::Notification(new_value) => {
+                        value.store(new_value, Ordering::SeqCst);
+                    }
+                    ServiceMessage::Request(request) => {
+                        let response_value = *request.message() + value.load(Ordering::SeqCst);
 
-                    request.respond(response_value).expect("Sending response failed");
+                        request
+                            .respond(response_value)
+                            .expect("Sending response failed");
+                    }
                 }
-            }
-        }).await?;
+            })
+            .await?;
 
         Ok(())
     }
@@ -56,11 +60,17 @@ async fn main() -> Result<()> {
     let task_handle = tokio::spawn(service.run());
 
     // Send a notification.
-    address.send(ServiceMessage::Notification(10)).await.unwrap();
+    address
+        .send(ServiceMessage::Notification(10))
+        .await
+        .unwrap();
 
     // Send a request and receive a response.
     let (request, response) = Request::new(1);
-    address.send(ServiceMessage::Request(request)).await.unwrap();
+    address
+        .send(ServiceMessage::Request(request))
+        .await
+        .unwrap();
     let response = response.await.unwrap();
     assert_eq!(response, 11);
 

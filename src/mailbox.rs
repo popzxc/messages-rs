@@ -29,7 +29,11 @@ impl<Input> Mailbox<Input> {
         let address = Address::new(sender);
         let stopped = false;
 
-        Self { stopped, receiver, address }
+        Self {
+            stopped,
+            receiver,
+            address,
+        }
     }
 
     /// Creates an [Address] object to communicate with this `Mailbox`.

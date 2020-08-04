@@ -2,7 +2,10 @@
 //! Unlike `simple.rs`, this example is build atop of the raw channels.
 
 use anyhow::Result;
-use futures::{channel::{mpsc, oneshot}, SinkExt, StreamExt};
+use futures::{
+    channel::{mpsc, oneshot},
+    SinkExt, StreamExt,
+};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 #[derive(Debug)]
@@ -37,7 +40,9 @@ impl Service {
                 ServiceMessage::Request(request, response) => {
                     let response_value = request + value.load(Ordering::SeqCst);
 
-                    response.send(response_value).expect("Sending response failed");
+                    response
+                        .send(response_value)
+                        .expect("Sending response failed");
                 }
                 ServiceMessage::Stop => {
                     break;
@@ -58,10 +63,16 @@ async fn main() -> Result<()> {
     let task_handle = tokio::spawn(service.run());
 
     // Send a notification.
-    message_sender.send(ServiceMessage::Notification(10)).await.unwrap();
+    message_sender
+        .send(ServiceMessage::Notification(10))
+        .await
+        .unwrap();
 
     // Send a request and receive a response.
-    message_sender.send(ServiceMessage::Request(1, request_sender)).await.unwrap();
+    message_sender
+        .send(ServiceMessage::Request(1, request_sender))
+        .await
+        .unwrap();
     let response = request_receiver.await.unwrap();
     assert_eq!(response, 11);
 
