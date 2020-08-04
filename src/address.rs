@@ -1,8 +1,6 @@
 use crate::errors::SendError;
 use futures::{channel::mpsc, SinkExt};
 
-use anyhow::Result;
-
 /// Internal wrapper over sent messages with additional types
 /// of requests.
 #[derive(Debug)]
@@ -41,7 +39,7 @@ impl<Input> Address<Input> {
     }
 
     /// Sends a message to the corresponding `Mailbox`.
-    pub async fn send(&mut self, message: Input) -> Result<()> {
+    pub async fn send(&mut self, message: Input) -> Result<(), SendError> {
         self.sender
             .send(message.into())
             .await
@@ -51,7 +49,7 @@ impl<Input> Address<Input> {
     }
 
     /// Sends a stop request to the corresponding `Mailbox`.
-    pub async fn stop(&mut self) -> Result<()> {
+    pub async fn stop(&mut self) -> Result<(), SendError> {
         self.sender
             .send(Message::StopRequest)
             .await

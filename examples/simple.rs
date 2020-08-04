@@ -39,7 +39,9 @@ impl Service {
                     request.respond(response_value).expect("Sending response failed");
                 }
             }
-        }).await
+        }).await?;
+
+        Ok(())
     }
 }
 

@@ -31,7 +31,7 @@ impl<Input, Output> Request<Input, Output> {
     }
 
     /// Sends a response to the request initiator.
-    pub fn respond(self, output: Output) -> Result<()> {
+    pub fn respond(self, output: Output) -> Result<(), SendError> {
         self.respond_channel
             .send(output)
             .map_err(|_| SendError::ReceiverDisconnected)?;

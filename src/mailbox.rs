@@ -2,7 +2,6 @@ use crate::{
     address::{Address, Message},
     errors::ReceiveError,
 };
-use anyhow::Result;
 use futures::{channel::mpsc, StreamExt};
 use std::future::Future;
 
@@ -41,7 +40,7 @@ impl<Input> Mailbox<Input> {
     /// Awaits for the any message to come and returns it.
     /// Returns an error if either this `Mailbox` has received a stop request, but was not resumed,
     /// or if all the senders have disconnected already.
-    pub async fn receive(&mut self) -> Result<Input> {
+    pub async fn receive(&mut self) -> Result<Input, ReceiveError> {
         if self.stopped {
             return Err(ReceiveError::Stopped)?;
         }
@@ -59,7 +58,7 @@ impl<Input> Mailbox<Input> {
     /// Runs an infinite loop which will handle all the incoming requests.
     /// Loop may exit with an `Ok(())` value if this `Mailbox` will receive a stop request,
     /// or with an `Err` value if all the senders will disconnect without providing a stop request.
-    pub async fn run_with<F, Fut>(mut self, mut handler: F) -> Result<()>
+    pub async fn run_with<F, Fut>(mut self, mut handler: F) -> Result<(), ReceiveError>
     where
         F: FnMut(Input) -> Fut,
         Fut: Future<Output = ()>,
