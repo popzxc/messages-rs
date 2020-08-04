@@ -34,9 +34,9 @@ impl Service {
                     value.store(new_value, Ordering::SeqCst);
                 }
                 ServiceMessage::Request(request) => {
-                    let response_value = *request.inner() + value.load(Ordering::SeqCst);
+                    let response_value = *request.message() + value.load(Ordering::SeqCst);
 
-                    request.respond(response_value).await.expect("Sending response failed");
+                    request.respond(response_value).expect("Sending response failed");
                 }
             }
         }).await

@@ -7,9 +7,9 @@ fn message_box() {
 
     basic_rt.block_on(async {
         let handler = |request: Request<i32, i32>| async move {
-            let response = *request.inner() + 1;
+            let response = *request.message() + 1;
 
-            request.respond(response).await.unwrap();
+            request.respond(response).unwrap();
         };
 
         let mailbox: Mailbox<Request<i32, i32>> = Mailbox::new();

@@ -7,7 +7,9 @@ use anyhow::Result;
 /// of requests.
 #[derive(Debug)]
 pub(crate) enum Message<Input> {
+    /// User-defined message.
     Message(Input),
+    /// Request to stop the Mailbox.
     StopRequest,
 }
 
@@ -17,6 +19,8 @@ impl<Input> From<Input> for Message<Input> {
     }
 }
 
+/// Address is an entity capable of sending messages.
+/// It represents a sender side of communication, and the receiver side is represented using [Mailbox].
 #[derive(Debug)]
 pub struct Address<Input> {
     sender: mpsc::Sender<Message<Input>>,
@@ -31,10 +35,12 @@ impl<Input> Clone for Address<Input> {
 }
 
 impl<Input> Address<Input> {
+    /// Internal constructor for the `Address` object.
     pub(crate) fn new(sender: mpsc::Sender<Message<Input>>) -> Self {
         Self { sender }
     }
 
+    /// Sends a message to the corresponding `Mailbox`.
     pub async fn send(&mut self, message: Input) -> Result<()> {
         self.sender
             .send(message.into())
@@ -44,6 +50,7 @@ impl<Input> Address<Input> {
         Ok(())
     }
 
+    /// Sends a stop request to the corresponding `Mailbox`.
     pub async fn stop(&mut self) -> Result<()> {
         self.sender
             .send(Message::StopRequest)
