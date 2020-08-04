@@ -3,6 +3,11 @@ name = "messages"
 version = "0.1.0"
 authors = ["Igor Aleksanov <popzxc@yandex.ru>"]
 edition = "2018"
+repository = "https://github.com/popzxc/messages-rs"
+documentation = "https://docs.rs/messages"
+keywords = ["channels", "async", "actor", "utils"]
+categories = ["rust-patterns"]
+description = "A midground between channels and actors."
 
 [dependencies]
 futures = "0.3.5"
