@@ -5,10 +5,11 @@ use crate::{
 use futures::{channel::mpsc, StreamExt};
 use std::future::Future;
 
+/// Default capacity for the mailbox.
 pub const DEFAULT_CAPACITY: usize = 128;
 
 /// Mailbox is an entity capable of receiving messages.
-/// It represents a receiver side of communication, and the sender side is represented using [Address].
+/// It represents a receiver side of communication, and the sender side is represented using [Address](../address/struct.Address.html).
 #[derive(Debug)]
 pub struct Mailbox<Input> {
     stopped: bool,

@@ -18,7 +18,7 @@ impl<Input> From<Input> for Message<Input> {
 }
 
 /// Address is an entity capable of sending messages.
-/// It represents a sender side of communication, and the receiver side is represented using [Mailbox].
+/// It represents a sender side of communication, and the receiver side is represented using [Mailbox](../mailbox/struct.Mailbox.html).
 #[derive(Debug)]
 pub struct Address<Input> {
     sender: mpsc::Sender<Message<Input>>,
