@@ -21,6 +21,18 @@ To compare channels-based implementation and the implementation that uses `messa
 - [channels example](examples/simple_channels.rs);
 - [messages example](examples/simple.rs).
 
+## Why?
+
+When your code has a plenty of channels (both `mpsc` and `oneshot`) it becomes hard to keep all of them in mind.
+More than that, since there are `mpsc::Sender` / `oneshot::Sender` (and same for `Receiver`), you either have to
+use type with module prefixes, or live with uncertainty.
+
+This crate attempts to simplify things for users. There is no more need to think about types of channels: `oneshot`
+ones are hidden in `Request` objects, and `mpsc` lies inside `Mailbox` / `Address`. Every type name is unique and
+hard to misinterpret.
+
+Hopefully, it may help to make code more readable.
+
 ## Contributing
 
 All kind of contributions is really appreciated!
