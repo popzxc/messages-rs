@@ -1,10 +1,11 @@
 [package]
 name = "messages"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Igor Aleksanov <popzxc@yandex.ru>"]
 edition = "2018"
 repository = "https://github.com/popzxc/messages-rs"
 documentation = "https://docs.rs/messages"
+readme = "README.md"
 license = "MIT"
 keywords = ["channels", "async", "actor", "utils"]
 categories = ["rust-patterns"]
