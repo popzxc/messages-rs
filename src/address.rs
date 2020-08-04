@@ -43,9 +43,7 @@ impl<Input> Address<Input> {
         self.sender
             .send(message.into())
             .await
-            .map_err(|_| SendError::ReceiverDisconnected)?;
-
-        Ok(())
+            .map_err(|_| SendError::ReceiverDisconnected)
     }
 
     /// Sends a stop request to the corresponding `Mailbox`.
@@ -53,8 +51,6 @@ impl<Input> Address<Input> {
         self.sender
             .send(Message::StopRequest)
             .await
-            .map_err(|_| SendError::ReceiverDisconnected)?;
-
-        Ok(())
+            .map_err(|_| SendError::ReceiverDisconnected)
     }
 }
