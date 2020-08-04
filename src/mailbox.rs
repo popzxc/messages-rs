@@ -16,6 +16,12 @@ pub struct Mailbox<Input> {
     address: Address<Input>,
 }
 
+impl<Input> Default for Mailbox<Input> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl<Input> Mailbox<Input> {
     /// Creates a new `Mailbox` with a [DEFAULT_CAPACITY].
     pub fn new() -> Self {
@@ -46,16 +52,16 @@ impl<Input> Mailbox<Input> {
     /// or if all the senders have disconnected already.
     pub async fn receive(&mut self) -> Result<Input, ReceiveError> {
         if self.stopped {
-            return Err(ReceiveError::Stopped)?;
+            return Err(ReceiveError::Stopped);
         }
 
         if let Some(message) = self.receiver.next().await {
             match message {
                 Message::Message(input) => Ok(input),
-                Message::StopRequest => Err(ReceiveError::Stopped)?,
+                Message::StopRequest => Err(ReceiveError::Stopped),
             }
         } else {
-            Err(ReceiveError::AllSendersDisconnected)?
+            Err(ReceiveError::AllSendersDisconnected)
         }
     }
 
@@ -79,7 +85,7 @@ impl<Input> Mailbox<Input> {
             }
         }
 
-        Err(ReceiveError::AllSendersDisconnected)?
+        Err(ReceiveError::AllSendersDisconnected)
     }
 
     /// Enables a mailbox again after it received a stop request.

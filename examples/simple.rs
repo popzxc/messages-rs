@@ -11,7 +11,7 @@ pub enum ServiceMessage {
     Request(Request<u64, u64>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct Service {
     value: AtomicU64,
     mailbox: Mailbox<ServiceMessage>,
@@ -19,10 +19,7 @@ pub struct Service {
 
 impl Service {
     pub fn new() -> Self {
-        Self {
-            value: 0.into(),
-            mailbox: Mailbox::new(),
-        }
+        Self::default()
     }
 
     pub fn address(&self) -> Address<ServiceMessage> {
