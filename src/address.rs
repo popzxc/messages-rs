@@ -1,13 +1,15 @@
 use std::sync::Arc;
 
 use crate::{
+    envelope::{Envelope, EnvelopeProxy},
     errors::SendError,
     handler::Handler,
     runner::{InputHandle, Signal},
+    Actor,
 };
 use futures::{
     channel::{mpsc, oneshot},
-    FutureExt, SinkExt, Stream, StreamExt,
+    SinkExt, Stream, StreamExt,
 };
 
 pub struct Address<A> {
@@ -37,23 +39,24 @@ impl<A> Address<A> {
 
     pub async fn send<IN, OUT>(&mut self, message: IN) -> Result<OUT, SendError>
     where
-        A: Send + Handler<IN, OUT> + 'static,
+        A: Actor + Send + Handler<IN, OUT> + 'static,
         Arc<A>: Send,
         IN: Send + 'static,
         OUT: Send + 'static,
     {
         let (sender, receiver) = oneshot::channel();
-        let handler = move |actor: Arc<A>| {
-            let future = async move {
-                let response_future = actor.handle(message);
-                let output = response_future.await;
-                let _ = sender.send(output);
-            };
+        let envelope: Envelope<IN, OUT> = Envelope::new(message, sender);
+        // let handler = move |actor: Arc<A>| {
+        //     let future = async move {
+        //         let response_future = actor.handle(message);
+        //         let output = response_future.await;
+        //         let _ = sender.send(output);
+        //     };
 
-            future.boxed()
-        };
+        //     future.boxed()
+        // };
 
-        let message = Box::new(handler);
+        let message = Box::new(envelope) as Box<dyn EnvelopeProxy<A> + Send + 'static>;
 
         self.sender
             .send(message)
@@ -65,7 +68,7 @@ impl<A> Address<A> {
 
     pub async fn into_stream_forwarder<IN, S>(mut self, mut stream: S) -> Result<(), SendError>
     where
-        A: Send + Handler<IN, ()> + 'static,
+        A: Actor + Send + Handler<IN, ()> + 'static,
         Arc<A>: Send,
         S: Send + Stream<Item = IN> + Unpin,
         IN: Send + 'static,

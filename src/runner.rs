@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
-use crate::{actor::Actor, address::Address, errors::ReceiveError};
-use futures::{channel::mpsc, future::BoxFuture, StreamExt};
+use crate::{actor::Actor, address::Address, envelope::EnvelopeProxy, errors::ReceiveError};
+use futures::{channel::mpsc, StreamExt};
 
 #[derive(Debug, Clone)]
 pub(crate) enum Signal {
@@ -11,7 +11,7 @@ pub(crate) enum Signal {
 /// Default capacity for the mailbox.
 pub const DEFAULT_CAPACITY: usize = 128;
 
-pub(crate) type InputHandle<A> = Box<dyn FnOnce(Arc<A>) -> BoxFuture<'static, ()> + Send + 'static>;
+pub(crate) type InputHandle<A> = Box<dyn EnvelopeProxy<A> + Send + 'static>;
 
 pub struct ActorRunner<ACTOR> {
     actor: Arc<ACTOR>,
@@ -57,8 +57,8 @@ where
         while running {
             futures::select! {
                 result = self.receiver.next() => {
-                    match result{
-                        Some(handler) => handler(self.actor.clone()).await,
+                    match result {
+                        Some(mut envelope) => envelope.handle(self.actor.clone()).await,
                         None => {
                             // ALl senders disconnected, stopping.
                             running = false;
