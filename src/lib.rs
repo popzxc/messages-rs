@@ -7,12 +7,15 @@
 //! migrating to the actor framework is a right choice.
 
 pub use crate::{
+    actor::Actor,
     address::Address,
     errors::{ReceiveError, SendError},
-    mailbox::Mailbox,
+    handler::Handler,
+    runner::ActorRunner,
 };
 
+pub mod actor;
 pub mod address;
 pub mod errors;
 pub mod handler;
-pub mod mailbox;
+pub mod runner;

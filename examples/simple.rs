@@ -3,13 +3,15 @@
 
 use anyhow::Result;
 use futures::{future::ready, FutureExt};
-use messages::{handler::Handler, Mailbox};
+use messages::{handler::Handler, Actor, ActorRunner};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 #[derive(Debug, Default)]
 pub struct Service {
     value: AtomicU64,
 }
+
+impl Actor for Service {}
 
 impl Handler<u64, ()> for Service {
     fn handle(&self, input: u64) -> futures::future::BoxFuture<()> {
@@ -35,7 +37,7 @@ impl Service {
 #[tokio::main]
 async fn main() -> Result<()> {
     // Start a service.
-    let service = Mailbox::new(Service::new());
+    let service = ActorRunner::new(Service::new());
     let mut address = service.address();
     let task_handle = tokio::spawn(service.run());
 

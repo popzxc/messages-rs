@@ -1,8 +1,10 @@
 use futures::FutureExt;
-use messages::{handler::Handler, Mailbox};
+use messages::{handler::Handler, Actor, ActorRunner};
 use tokio::runtime::Builder;
 
 struct PingActor {}
+
+impl Actor for PingActor {}
 
 impl Handler<u8, u8> for PingActor {
     fn handle(&self, input: u8) -> futures::future::BoxFuture<u8> {
@@ -15,7 +17,7 @@ fn message_box() {
     let mut basic_rt = Builder::new().basic_scheduler().build().unwrap();
 
     basic_rt.block_on(async {
-        let mailbox: Mailbox<PingActor> = Mailbox::new(PingActor {});
+        let mailbox: ActorRunner<PingActor> = ActorRunner::new(PingActor {});
 
         let mut address = mailbox.address();
         let future = tokio::spawn(mailbox.run());
