@@ -2,7 +2,7 @@
 //! Unlike `simple.rs`, this example is build atop of the `messages` crate.
 
 use anyhow::Result;
-use messages::{async_trait, handler::Handler, Actor, ActorRunner};
+use messages::{async_trait, handler::Handler, Actor};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 #[derive(Debug, Default)]
@@ -35,7 +35,7 @@ impl Service {
 #[tokio::main]
 async fn main() -> Result<()> {
     // Start a service.
-    let service = ActorRunner::new(Service::new());
+    let service = Service::new().into_runner();
     let mut address = service.address();
     let task_handle = tokio::spawn(service.run());
 
