@@ -1,28 +1,27 @@
-use messages::{Mailbox, Request};
+use futures::FutureExt;
+use messages::{handler::Handler, Mailbox};
 use tokio::runtime::Builder;
+
+struct PingActor {}
+
+impl Handler<u8, u8> for PingActor {
+    fn handle(&self, input: u8) -> futures::future::BoxFuture<u8> {
+        async move { input }.boxed()
+    }
+}
 
 #[test]
 fn message_box() {
     let mut basic_rt = Builder::new().basic_scheduler().build().unwrap();
 
     basic_rt.block_on(async {
-        let handler = |request: Request<i32, i32>| async move {
-            let response = *request.message() + 1;
-
-            request.respond(response).unwrap();
-        };
-
-        let mailbox: Mailbox<Request<i32, i32>> = Mailbox::new();
+        let mailbox: Mailbox<PingActor> = Mailbox::new(PingActor {});
 
         let mut address = mailbox.address();
+        let future = tokio::spawn(mailbox.run());
 
-        let future = tokio::spawn(mailbox.run_with(handler));
-
-        let (request, response) = Request::new(10);
-        address.send(request).await.unwrap();
-
-        let response = response.await.unwrap();
-        assert_eq!(response, 11);
+        let response = address.send(10).await.unwrap();
+        assert_eq!(response, 10);
 
         address.stop().await.unwrap();
 

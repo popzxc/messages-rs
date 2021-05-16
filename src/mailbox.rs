@@ -53,12 +53,12 @@ where
         self.address.clone()
     }
 
-    pub async fn run(&mut self) -> Result<(), ReceiveError> {
+    pub async fn run(mut self) -> Result<(), ReceiveError> {
         loop {
             futures::select! {
                 result = self.receiver.next() => {
                     let handler = result.ok_or(ReceiveError::AllSendersDisconnected)?;
-                    handler(self.actor.clone());
+                    handler(self.actor.clone()).await;
                 },
                 signal = self.signal_receiver.next() => {
                     let signal = signal.ok_or(ReceiveError::AllSendersDisconnected)?;

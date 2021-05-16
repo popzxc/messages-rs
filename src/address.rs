@@ -64,7 +64,10 @@ impl<A> Address<A> {
             .await
             .map_err(|_| SendError::ReceiverDisconnected)?;
 
-        receiver.await.map_err(|_| SendError::ReceiverDisconnected)
+        receiver.await.map_err(|_| {
+            println!("Not received response");
+            SendError::ReceiverDisconnected
+        })
     }
 
     /// Sends a stop request to the corresponding `Mailbox`.
