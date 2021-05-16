@@ -13,7 +13,9 @@ pub use crate::{
     request::Request,
 };
 
+pub mod actor;
 pub mod address;
 pub mod errors;
+pub mod handler;
 pub mod mailbox;
 pub mod request;
