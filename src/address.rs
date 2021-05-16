@@ -7,7 +7,7 @@ use crate::{
 };
 use futures::{
     channel::{mpsc, oneshot},
-    FutureExt, SinkExt,
+    FutureExt, SinkExt, Stream, StreamExt,
 };
 
 /// Address is an entity capable of sending messages.
@@ -64,10 +64,21 @@ impl<A> Address<A> {
             .await
             .map_err(|_| SendError::ReceiverDisconnected)?;
 
-        receiver.await.map_err(|_| {
-            println!("Not received response");
-            SendError::ReceiverDisconnected
-        })
+        receiver.await.map_err(|_| SendError::ReceiverDisconnected)
+    }
+
+    pub async fn into_stream_forwarder<IN, S>(mut self, mut stream: S) -> Result<(), SendError>
+    where
+        A: Send + Handler<IN, ()> + 'static,
+        Arc<A>: Send,
+        S: Send + Stream<Item = IN> + Unpin,
+        IN: Send + 'static,
+    {
+        loop {
+            while let Some(message) = stream.next().await {
+                self.send(message).await?;
+            }
+        }
     }
 
     /// Sends a stop request to the corresponding `Mailbox`.
