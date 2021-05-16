@@ -1,5 +1,6 @@
-use futures::future::BoxFuture;
+use async_trait::async_trait;
 
-pub trait Handler<IN, OUT> {
-    fn handle(&self, input: IN) -> BoxFuture<OUT>;
+#[async_trait]
+pub trait Handler<IN, OUT = ()> {
+    async fn handle(&self, input: IN) -> OUT;
 }

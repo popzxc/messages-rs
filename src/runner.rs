@@ -51,7 +51,7 @@ where
     }
 
     pub async fn run(mut self) -> Result<(), ReceiveError> {
-        self.actor.started();
+        self.actor.started().await;
 
         let mut running = true;
         while running {
@@ -75,7 +75,7 @@ where
             }
         }
 
-        self.actor.stopped();
+        self.actor.stopped().await;
         Ok(())
     }
 }

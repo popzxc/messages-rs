@@ -6,6 +6,8 @@
 //! It is intended to be used when channels in your project start looking a bit messy, but you aren't sure that
 //! migrating to the actor framework is a right choice.
 
+pub use async_trait::async_trait;
+
 pub use crate::{
     actor::Actor,
     address::Address,

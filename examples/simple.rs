@@ -2,8 +2,7 @@
 //! Unlike `simple.rs`, this example is build atop of the `messages` crate.
 
 use anyhow::Result;
-use futures::{future::ready, FutureExt};
-use messages::{handler::Handler, Actor, ActorRunner};
+use messages::{async_trait, handler::Handler, Actor, ActorRunner};
 use std::sync::atomic::{AtomicU64, Ordering};
 
 #[derive(Debug, Default)]
@@ -13,18 +12,17 @@ pub struct Service {
 
 impl Actor for Service {}
 
-impl Handler<u64, ()> for Service {
-    fn handle(&self, input: u64) -> futures::future::BoxFuture<()> {
+#[async_trait]
+impl Handler<u64> for Service {
+    async fn handle(&self, input: u64) {
         self.value.store(input, Ordering::SeqCst);
-        ready(()).boxed()
     }
 }
 
+#[async_trait]
 impl Handler<u64, u64> for Service {
-    fn handle(&self, input: u64) -> futures::future::BoxFuture<u64> {
-        let response_value = input + self.value.load(Ordering::SeqCst);
-
-        ready(response_value).boxed()
+    async fn handle(&self, input: u64) -> u64 {
+        input + self.value.load(Ordering::SeqCst)
     }
 }
 

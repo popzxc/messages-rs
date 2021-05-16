@@ -1,14 +1,14 @@
-use futures::FutureExt;
-use messages::{handler::Handler, Actor, ActorRunner};
+use messages::{async_trait, handler::Handler, Actor, ActorRunner};
 use tokio::runtime::Builder;
 
 struct PingActor {}
 
 impl Actor for PingActor {}
 
+#[async_trait]
 impl Handler<u8, u8> for PingActor {
-    fn handle(&self, input: u8) -> futures::future::BoxFuture<u8> {
-        async move { input }.boxed()
+    async fn handle(&self, input: u8) -> u8 {
+        input
     }
 }
 

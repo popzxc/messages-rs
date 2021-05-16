@@ -1,5 +1,8 @@
-pub trait Actor {
+use async_trait::async_trait;
+
+#[async_trait]
+pub trait Actor: Send + Sync {
     fn created(&self) {}
-    fn started(&self) {}
-    fn stopped(&self) {}
+    async fn started(&self) {}
+    async fn stopped(&self) {}
 }
