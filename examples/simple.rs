@@ -55,7 +55,7 @@ async fn main() -> Result<()> {
     assert_eq!(response, 11);
 
     // Stop service.
-    address.stop().await.unwrap();
+    address.stop().await;
     assert!(task_handle.await.is_ok());
 
     Ok(())

@@ -15,6 +15,12 @@ pub struct Address<A> {
     signal_sender: mpsc::Sender<Signal>,
 }
 
+impl<A> std::fmt::Debug for Address<A> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Address").finish()
+    }
+}
+
 impl<A> Clone for Address<A> {
     fn clone(&self) -> Self {
         Self {
@@ -67,11 +73,13 @@ impl<A> Address<A> {
         Ok(())
     }
 
+    pub fn connected(&self) -> bool {
+        !self.sender.is_closed()
+    }
+
     /// Sends a stop request to the corresponding `Mailbox`.
-    pub async fn stop(&mut self) -> Result<(), SendError> {
-        self.signal_sender
-            .send(Signal::Stop)
-            .await
-            .map_err(|_| SendError::ReceiverDisconnected)
+    pub async fn stop(&mut self) {
+        // If actor is already stopped, we're fine with it.
+        let _ = self.signal_sender.send(Signal::Stop).await;
     }
 }

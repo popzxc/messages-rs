@@ -27,7 +27,7 @@ fn basic_workflow() {
         let response = address.send(10).await.unwrap();
         assert_eq!(response, 10);
 
-        address.stop().await.unwrap();
+        address.stop().await;
 
         assert!(future.await.is_ok());
     });
