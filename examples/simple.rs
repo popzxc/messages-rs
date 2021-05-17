@@ -3,26 +3,25 @@
 
 use anyhow::Result;
 use messages::{async_trait, handler::Handler, Actor};
-use std::sync::atomic::{AtomicU64, Ordering};
 
 #[derive(Debug, Default)]
 pub struct Service {
-    value: AtomicU64,
+    value: u64,
 }
 
 impl Actor for Service {}
 
 #[async_trait]
 impl Handler<u64> for Service {
-    async fn handle(&self, input: u64) {
-        self.value.store(input, Ordering::SeqCst);
+    async fn handle(&mut self, input: u64) {
+        self.value = input;
     }
 }
 
 #[async_trait]
 impl Handler<u64, u64> for Service {
-    async fn handle(&self, input: u64) -> u64 {
-        input + self.value.load(Ordering::SeqCst)
+    async fn handle(&mut self, input: u64) -> u64 {
+        self.value + input
     }
 }
 

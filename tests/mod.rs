@@ -7,13 +7,13 @@ impl Actor for PingActor {}
 
 #[async_trait]
 impl Handler<u8, u8> for PingActor {
-    async fn handle(&self, input: u8) -> u8 {
+    async fn handle(&mut self, input: u8) -> u8 {
         input
     }
 }
 
 #[test]
-fn message_box() {
+fn basic_workflow() {
     let mut basic_rt = Builder::new().basic_scheduler().build().unwrap();
 
     basic_rt.block_on(async {
