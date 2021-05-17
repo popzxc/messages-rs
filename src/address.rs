@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::{
     envelope::{Envelope, EnvelopeProxy},
     errors::SendError,
@@ -37,24 +35,14 @@ impl<A> Address<A> {
         }
     }
 
-    pub async fn send<IN, OUT>(&mut self, message: IN) -> Result<OUT, SendError>
+    pub async fn send<IN>(&mut self, message: IN) -> Result<A::Result, SendError>
     where
-        A: Actor + Send + Handler<IN, OUT> + 'static,
-        Arc<A>: Send,
+        A: Actor + Send + Handler<IN> + 'static,
         IN: Send + 'static,
-        OUT: Send + 'static,
+        A::Result: Send + 'static,
     {
         let (sender, receiver) = oneshot::channel();
-        let envelope: Envelope<IN, OUT> = Envelope::new(message, sender);
-        // let handler = move |actor: Arc<A>| {
-        //     let future = async move {
-        //         let response_future = actor.handle(message);
-        //         let output = response_future.await;
-        //         let _ = sender.send(output);
-        //     };
-
-        //     future.boxed()
-        // };
+        let envelope: Envelope<A, IN> = Envelope::new(message, sender);
 
         let message = Box::new(envelope) as Box<dyn EnvelopeProxy<A> + Send + 'static>;
 
@@ -68,16 +56,15 @@ impl<A> Address<A> {
 
     pub async fn into_stream_forwarder<IN, S>(mut self, mut stream: S) -> Result<(), SendError>
     where
-        A: Actor + Send + Handler<IN, ()> + 'static,
-        Arc<A>: Send,
+        A: Actor + Send + Handler<IN> + 'static,
         S: Send + Stream<Item = IN> + Unpin,
         IN: Send + 'static,
+        A::Result: Send + 'static,
     {
-        loop {
-            while let Some(message) = stream.next().await {
-                self.send(message).await?;
-            }
+        while let Some(message) = stream.next().await {
+            self.send(message).await?;
         }
+        Ok(())
     }
 
     /// Sends a stop request to the corresponding `Mailbox`.

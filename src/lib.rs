@@ -18,7 +18,8 @@ pub use crate::{
 
 pub mod actor;
 pub mod address;
-mod envelope;
 pub mod errors;
 pub mod handler;
 pub mod runner;
+
+mod envelope;

@@ -1,6 +1,8 @@
 use async_trait::async_trait;
 
 #[async_trait]
-pub trait Handler<IN, OUT = ()> {
-    async fn handle(&mut self, input: IN) -> OUT;
+pub trait Handler<IN> {
+    type Result;
+
+    async fn handle(&mut self, input: IN) -> Self::Result;
 }

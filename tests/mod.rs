@@ -6,7 +6,9 @@ struct PingActor {}
 impl Actor for PingActor {}
 
 #[async_trait]
-impl Handler<u8, u8> for PingActor {
+impl Handler<u8> for PingActor {
+    type Result = u8;
+
     async fn handle(&mut self, input: u8) -> u8 {
         input
     }
