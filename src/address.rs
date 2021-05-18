@@ -1,8 +1,8 @@
 use crate::{
+    context::{InputHandle, Signal},
     envelope::{Envelope, EnvelopeProxy},
     errors::SendError,
     handler::Handler,
-    runner::{InputHandle, Signal},
     Actor,
 };
 use futures::{

@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crate::ActorRunner;
+use crate::Context;
 
 #[async_trait]
 pub trait Actor: Unpin + Send + Sync + Sized + 'static {
@@ -8,11 +8,11 @@ pub trait Actor: Unpin + Send + Sync + Sized + 'static {
     async fn started(&self) {}
     async fn stopped(&self) {}
 
-    fn into_runner(self) -> ActorRunner<Self> {
-        ActorRunner::new(self)
+    fn into_runner(self) -> Context<Self> {
+        Context::new(self)
     }
 
-    fn into_runner_with_capacity(self, capacity: usize) -> ActorRunner<Self> {
-        ActorRunner::with_capacity(self, capacity)
+    fn into_runner_with_capacity(self, capacity: usize) -> Context<Self> {
+        Context::with_capacity(self, capacity)
     }
 }

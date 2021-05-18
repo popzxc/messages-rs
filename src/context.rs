@@ -13,14 +13,14 @@ pub const DEFAULT_CAPACITY: usize = 128;
 
 pub(crate) type InputHandle<A> = Box<dyn EnvelopeProxy<A> + Send + 'static>;
 
-pub struct ActorRunner<ACTOR> {
+pub struct Context<ACTOR> {
     actor: ACTOR,
     receiver: mpsc::Receiver<InputHandle<ACTOR>>,
     signal_receiver: mpsc::Receiver<Signal>,
     address: Address<ACTOR>,
 }
 
-impl<ACTOR> ActorRunner<ACTOR>
+impl<ACTOR> Context<ACTOR>
 where
     ACTOR: 'static + Send + Actor + Unpin,
 {

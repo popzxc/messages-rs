@@ -11,15 +11,15 @@ pub use async_trait::async_trait;
 pub use crate::{
     actor::Actor,
     address::Address,
+    context::Context,
     errors::{ReceiveError, SendError},
     handler::Handler,
-    runner::ActorRunner,
 };
 
 pub mod actor;
 pub mod address;
+pub mod context;
 pub mod errors;
 pub mod handler;
-pub mod runner;
 
 mod envelope;

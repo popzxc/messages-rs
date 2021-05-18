@@ -1,4 +1,4 @@
-use messages::{async_trait, handler::Handler, Actor, ActorRunner};
+use messages::{async_trait, handler::Handler, Actor, Context};
 use tokio::runtime::Builder;
 
 struct PingActor {}
@@ -19,7 +19,7 @@ fn basic_workflow() {
     let mut basic_rt = Builder::new().basic_scheduler().build().unwrap();
 
     basic_rt.block_on(async {
-        let mailbox: ActorRunner<PingActor> = ActorRunner::new(PingActor {});
+        let mailbox: Context<PingActor> = Context::new(PingActor {});
 
         let mut address = mailbox.address();
         let future = tokio::spawn(mailbox.run());
