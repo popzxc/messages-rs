@@ -1,6 +1,8 @@
 use std::pin::Pin;
 
-use crate::{actor::Actor, address::Address, envelope::EnvelopeProxy, errors::ReceiveError};
+use crate::{
+    actor::Actor, address::Address, cfg_runtime, envelope::EnvelopeProxy, errors::ReceiveError,
+};
 use futures::{channel::mpsc, StreamExt};
 
 #[derive(Debug, Clone)]
@@ -78,5 +80,13 @@ where
 
         self.actor.stopped().await;
         Ok(())
+    }
+
+    cfg_runtime! {
+        pub fn spawn(self) -> Address<ACTOR> {
+            let address = self.address();
+            crate::runtime::spawn(self.run());
+            address
+        }
     }
 }
