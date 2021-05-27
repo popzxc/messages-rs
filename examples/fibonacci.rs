@@ -38,10 +38,7 @@ impl Handler<Fibonacci> for SyncActor {
 
 #[tokio::main]
 async fn main() {
-    // start sync arbiter with 3 threads
-    let service = SyncActor.into_runner();
-    let mut address = service.address();
-    let task_handle = tokio::spawn(service.run());
+    let mut address = SyncActor.spawn();
 
     // send 5 messages
     for n in 5..10 {
@@ -49,5 +46,4 @@ async fn main() {
     }
 
     address.stop().await;
-    assert!(task_handle.await.is_ok());
 }

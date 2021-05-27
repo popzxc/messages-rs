@@ -43,9 +43,7 @@ impl Service {
 #[tokio::main]
 async fn main() -> Result<()> {
     // Start a service.
-    let service = Service::new().into_runner();
-    let mut address = service.address();
-    let task_handle = tokio::spawn(service.run());
+    let mut address = Service::new().spawn();
 
     // Send a notification.
     address.send(Notification(10)).await.unwrap();
@@ -56,7 +54,6 @@ async fn main() -> Result<()> {
 
     // Stop service.
     address.stop().await;
-    assert!(task_handle.await.is_ok());
 
     Ok(())
 }

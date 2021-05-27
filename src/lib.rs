@@ -22,5 +22,10 @@ pub mod context;
 pub mod errors;
 pub mod handler;
 
+cfg_runtime! {
+    pub mod registry;
+    pub mod service;
+}
+
 mod envelope;
 mod runtime;

@@ -15,10 +15,11 @@ impl Handler<u8> for PingActor {
 
 #[tokio::test]
 async fn basic_workflow() {
-    let mailbox: Context<PingActor> = Context::new(PingActor {});
+    let actor = PingActor {};
+    let mailbox: Context<PingActor> = Context::new();
 
     let mut address = mailbox.address();
-    let future = tokio::spawn(mailbox.run());
+    let future = tokio::spawn(mailbox.run(actor));
 
     let response = address.send(10).await.unwrap();
     assert_eq!(response, 10);

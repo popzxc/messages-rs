@@ -25,9 +25,7 @@ impl Handler<Ping> for MyActor {
 #[tokio::main]
 async fn main() {
     // start new actor
-    let service = MyActor { count: 10 }.into_runner();
-    let mut address = service.address();
-    let task_handle = tokio::spawn(service.run());
+    let mut address = MyActor { count: 10 }.spawn();
 
     // send message and get future for result
     let res = address.send(Ping(10)).await;
@@ -37,5 +35,4 @@ async fn main() {
 
     // stop system and exit
     address.stop().await;
-    assert!(task_handle.await.is_ok());
 }
