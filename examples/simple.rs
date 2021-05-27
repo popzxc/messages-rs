@@ -2,7 +2,7 @@
 //! Unlike `simple.rs`, this example is build atop of the `messages` crate.
 
 use anyhow::Result;
-use messages::{async_trait, handler::Handler, Actor};
+use messages::{async_trait, handler::Handler, Actor, Context};
 
 #[derive(Debug, Default)]
 pub struct Service {
@@ -20,7 +20,7 @@ pub struct Request(pub u64);
 impl Handler<Notification> for Service {
     type Result = ();
 
-    async fn handle(&mut self, input: Notification) {
+    async fn handle(&mut self, input: Notification, _: &mut Context<Self>) {
         self.value = input.0;
     }
 }
@@ -29,7 +29,7 @@ impl Handler<Notification> for Service {
 impl Handler<Request> for Service {
     type Result = u64;
 
-    async fn handle(&mut self, input: Request) -> u64 {
+    async fn handle(&mut self, input: Request, _: &mut Context<Self>) -> u64 {
         self.value + input.0
     }
 }

@@ -3,11 +3,11 @@ use std::pin::Pin;
 use async_trait::async_trait;
 use futures::channel::oneshot;
 
-use crate::{Actor, Handler};
+use crate::{Actor, Context, Handler};
 
 #[async_trait]
 pub(crate) trait EnvelopeProxy<A: Actor + Unpin>: Send + 'static {
-    async fn handle(&mut self, actor: Pin<&mut A>);
+    async fn handle(&mut self, actor: Pin<&mut A>, context: Pin<&mut Context<A>>);
 }
 
 pub(crate) struct Envelope<A: Handler<IN>, IN> {
@@ -36,14 +36,14 @@ where
     IN: Send + 'static,
     A::Result: Send + 'static,
 {
-    async fn handle(&mut self, actor: Pin<&mut A>) {
+    async fn handle(&mut self, actor: Pin<&mut A>, context: Pin<&mut Context<A>>) {
         let message = self
             .message
             .take()
             .expect("`Envelope::handle` called twice");
         let response = self.response.take().unwrap();
 
-        let result = actor.get_mut().handle(message).await;
+        let result = actor.get_mut().handle(message, context.get_mut()).await;
         let _ = response.send(result);
     }
 }

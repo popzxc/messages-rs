@@ -15,7 +15,7 @@ impl Actor for SyncActor {}
 impl Handler<Fibonacci> for SyncActor {
     type Result = Result<u64, ()>;
 
-    async fn handle(&mut self, msg: Fibonacci) -> Self::Result {
+    async fn handle(&mut self, msg: Fibonacci, _: &mut Context<Self>) -> Self::Result {
         if msg.0 == 0 {
             Err(())
         } else if msg.0 == 1 {

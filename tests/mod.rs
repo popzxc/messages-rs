@@ -8,7 +8,7 @@ impl Actor for PingActor {}
 impl Handler<u8> for PingActor {
     type Result = u8;
 
-    async fn handle(&mut self, input: u8) -> u8 {
+    async fn handle(&mut self, input: u8, _: &mut Context<Self>) -> u8 {
         input
     }
 }

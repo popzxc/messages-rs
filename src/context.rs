@@ -63,7 +63,8 @@ where
                     match result {
                         Some(mut envelope) => {
                             let actor_pin = Pin::new(&mut actor);
-                            envelope.handle(actor_pin).await;
+                            let self_pin = Pin::new(&mut self);
+                            envelope.handle(actor_pin, self_pin).await;
                         }
                         None => {
                             // ALl senders disconnected, stopping.
