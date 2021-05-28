@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::{
     context::{InputHandle, Signal},
     envelope::{Envelope, EnvelopeProxy},
@@ -7,12 +9,14 @@ use crate::{
 };
 use futures::{
     channel::{mpsc, oneshot},
+    lock::Mutex,
     SinkExt, Stream, StreamExt,
 };
 
 pub struct Address<A> {
     sender: mpsc::Sender<InputHandle<A>>,
     signal_sender: mpsc::Sender<Signal>,
+    stop_handle: Arc<Mutex<()>>,
 }
 
 impl<A> std::fmt::Debug for Address<A> {
@@ -26,6 +30,7 @@ impl<A> Clone for Address<A> {
         Self {
             sender: self.sender.clone(),
             signal_sender: self.signal_sender.clone(),
+            stop_handle: self.stop_handle.clone(),
         }
     }
 }
@@ -34,10 +39,12 @@ impl<A> Address<A> {
     pub(crate) fn new(
         sender: mpsc::Sender<InputHandle<A>>,
         signal_sender: mpsc::Sender<Signal>,
+        stop_handle: Arc<Mutex<()>>,
     ) -> Self {
         Self {
             sender,
             signal_sender,
+            stop_handle,
         }
     }
 
@@ -81,5 +88,16 @@ impl<A> Address<A> {
     pub async fn stop(&mut self) {
         // If actor is already stopped, we're fine with it.
         let _ = self.signal_sender.send(Signal::Stop).await;
+    }
+
+    /// Creates a future that waits for actor to be fully stopped.
+    pub async fn wait_for_stop(&self) {
+        // We will only able to obtain the lock when context will release it.
+        // However, we don't want to exit early in case this method is called
+        // before actor is actually started, so we do it in the loop until
+        // the channel is disconnected.
+        while self.connected() {
+            self.stop_handle.lock().await;
+        }
     }
 }
