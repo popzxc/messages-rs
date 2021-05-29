@@ -8,6 +8,7 @@
 use std::{env, io, time::SystemTime};
 
 use async_trait::async_trait;
+use futures::{channel::mpsc, SinkExt, StreamExt};
 use messages::*;
 
 /// A payload with a counter
@@ -19,6 +20,7 @@ struct Node {
     id: usize,
     limit: usize,
     next: Address<Self>,
+    calculated: mpsc::Sender<()>,
 }
 
 impl Actor for Node {}
@@ -27,14 +29,15 @@ impl Actor for Node {}
 impl Handler<Payload> for Node {
     type Result = ();
 
-    async fn handle(&mut self, msg: Payload, ctx: &mut Context<Self>) {
+    async fn handle(&mut self, msg: Payload, _ctx: &mut Context<Self>) {
         if msg.0 >= self.limit {
             println!(
                 "Actor {} reached limit of {} (payload was {})",
                 self.id, self.limit, msg.0
             );
 
-            ctx.address().stop().await;
+            self.calculated.send(()).await.unwrap();
+            // ctx.address().stop().await;
             return;
         }
 
@@ -50,10 +53,8 @@ impl Handler<Payload> for Node {
             );
         }
 
-        self.next
-            .send(Payload(msg.0 + 1))
-            .await
-            .expect("Unable to send payload");
+        let mut next = self.next.clone();
+        tokio::spawn(async move { next.send(Payload(msg.0 + 1)).await });
     }
 }
 
@@ -62,6 +63,8 @@ async fn main() -> io::Result<()> {
     let (n_nodes, n_rounds) = parse_args();
 
     let now = SystemTime::now();
+
+    let (calculated_sender, mut calculated_receiver) = mpsc::channel(1);
 
     println!("Setting up {} nodes", n_nodes);
     let limit = n_nodes * n_rounds;
@@ -73,6 +76,7 @@ async fn main() -> io::Result<()> {
             id: 1,
             limit,
             next: first_addr,
+            calculated: calculated_sender.clone(),
         }
         .spawn();
 
@@ -81,6 +85,7 @@ async fn main() -> io::Result<()> {
                 id,
                 limit,
                 next: prev_addr,
+                calculated: calculated_sender.clone(),
             }
             .spawn();
         }
@@ -89,6 +94,7 @@ async fn main() -> io::Result<()> {
             id: n_nodes,
             limit,
             next: prev_addr,
+            calculated: calculated_sender,
         }
     });
 
@@ -99,18 +105,18 @@ async fn main() -> io::Result<()> {
 
     node.send(Payload(1)).await.unwrap();
 
-    // TODO: Not implemented right now.
     // We should wait for flow to be completed.
+    calculated_receiver.next().await;
 
-    // match now.elapsed() {
-    //     Ok(elapsed) => println!(
-    //         "Time taken: {}.{:06} seconds ({} msg/second)",
-    //         elapsed.as_secs(),
-    //         elapsed.subsec_micros(),
-    //         (n_nodes * n_rounds * 1000000) as u128 / elapsed.as_micros()
-    //     ),
-    //     Err(e) => println!("An error occurred: {:?}", e),
-    // }
+    match now.elapsed() {
+        Ok(elapsed) => println!(
+            "Time taken: {}.{:06} seconds ({} msg/second)",
+            elapsed.as_secs(),
+            elapsed.subsec_micros(),
+            (n_nodes * n_rounds * 1000000) as u128 / elapsed.as_micros()
+        ),
+        Err(e) => println!("An error occurred: {:?}", e),
+    }
 
     Ok(())
 }
