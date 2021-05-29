@@ -54,7 +54,7 @@ impl Handler<Payload> for Node {
         }
 
         let mut next = self.next.clone();
-        tokio::spawn(async move { next.send(Payload(msg.0 + 1)).await });
+        next.notify(Payload(msg.0 + 1)).await.unwrap();
     }
 }
 

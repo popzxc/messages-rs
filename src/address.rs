@@ -67,6 +67,25 @@ impl<A> Address<A> {
         receiver.await.map_err(|_| SendError::ReceiverDisconnected)
     }
 
+    pub async fn notify<IN>(&mut self, message: IN) -> Result<(), SendError>
+    where
+        A: Actor + Send + Handler<IN> + 'static,
+        IN: Send + 'static,
+        A::Result: Send + 'static,
+    {
+        let (sender, _receiver) = oneshot::channel();
+        let envelope: Envelope<A, IN> = Envelope::new(message, sender);
+
+        let message = Box::new(envelope) as Box<dyn EnvelopeProxy<A> + Send + 'static>;
+
+        self.sender
+            .send(message)
+            .await
+            .map_err(|_| SendError::ReceiverDisconnected)?;
+
+        Ok(())
+    }
+
     pub async fn into_stream_forwarder<IN, S>(mut self, mut stream: S) -> Result<(), SendError>
     where
         A: Actor + Send + Handler<IN> + 'static,
