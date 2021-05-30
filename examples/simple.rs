@@ -2,7 +2,7 @@
 //! Unlike `simple.rs`, this example is build atop of the `messages` crate.
 
 use anyhow::Result;
-use messages::{async_trait, handler::Handler, Actor, Context};
+use messages::prelude::*;
 
 #[derive(Debug, Default)]
 pub struct Service {

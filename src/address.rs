@@ -1,12 +1,12 @@
 use std::sync::Arc;
 
 use crate::{
+    actor::Actor,
     cfg_runtime,
     context::{InputHandle, Signal},
     envelope::{Envelope, EnvelopeProxy, NotifyEnvelope},
     errors::SendError,
     handler::{Handler, Notifiable},
-    Actor,
 };
 use futures::{
     channel::{mpsc, oneshot},

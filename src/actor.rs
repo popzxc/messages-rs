@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crate::{cfg_runtime, Address, Context};
+use crate::{address::Address, cfg_runtime, context::Context};
 
 #[async_trait]
 pub trait Actor: Unpin + Send + Sync + Sized + 'static {

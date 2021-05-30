@@ -1,4 +1,4 @@
-use messages::*;
+use messages::prelude::*;
 
 /// Define `Ping` message
 struct Ping(usize);

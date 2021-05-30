@@ -1,4 +1,4 @@
-use messages::{async_trait, handler::Handler, Actor, Context};
+use messages::prelude::{async_trait, Actor, Context, Handler};
 
 struct PingActor {}
 

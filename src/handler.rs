@@ -1,6 +1,6 @@
 use async_trait::async_trait;
 
-use crate::{Actor, Context};
+use crate::prelude::{Actor, Context};
 
 #[async_trait]
 pub trait Notifiable<IN>: Sized + Actor {

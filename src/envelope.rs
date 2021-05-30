@@ -3,7 +3,7 @@ use std::pin::Pin;
 use async_trait::async_trait;
 use futures::channel::oneshot;
 
-use crate::{handler::Notifiable, Actor, Context, Handler};
+use crate::prelude::{Actor, Context, Handler, Notifiable};
 
 #[async_trait]
 pub(crate) trait EnvelopeProxy<A: Actor + Unpin>: Send + 'static {

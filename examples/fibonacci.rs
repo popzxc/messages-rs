@@ -1,9 +1,4 @@
-//! Example of sync actor. It can be used for cpu bound tasks. Only one sync
-//! actor runs within arbiter's thread. Sync actor processes one message at a
-//! time. Sync arbiter can start multiple threads with separate instance of
-//! actor in each.
-
-use messages::*;
+use messages::prelude::*;
 
 struct Fibonacci(pub u32);
 

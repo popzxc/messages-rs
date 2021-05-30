@@ -7,10 +7,8 @@
 
 use std::{env, io, time::SystemTime};
 
-use async_trait::async_trait;
 use futures::{channel::mpsc, SinkExt, StreamExt};
-use handler::Notifiable;
-use messages::*;
+use messages::prelude::*;
 
 /// A payload with a counter
 #[derive(Debug)]
