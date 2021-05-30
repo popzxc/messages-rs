@@ -36,7 +36,6 @@ impl Notifiable<Payload> for Node {
             );
 
             self.calculated.send(()).await.unwrap();
-            // ctx.address().stop().await;
             return;
         }
 
@@ -52,8 +51,7 @@ impl Notifiable<Payload> for Node {
             );
         }
 
-        let mut next = self.next.clone();
-        next.notify(Payload(msg.0 + 1)).await.unwrap();
+        let _ = self.next.notify(Payload(msg.0 + 1)).await;
     }
 }
 
