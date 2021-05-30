@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use crate::{
+    cfg_runtime,
     context::{InputHandle, Signal},
     envelope::{Envelope, EnvelopeProxy, NotifyEnvelope},
     errors::SendError,
@@ -95,6 +96,18 @@ impl<A> Address<A> {
             self.send(message).await?;
         }
         Ok(())
+    }
+
+    cfg_runtime! {
+        pub fn spawn_stream_forwarder<IN, S>(self, stream: S)
+        where
+            A: Actor + Send + Handler<IN> + 'static,
+            S: Send + Stream<Item = IN> + Unpin + 'static,
+            IN: Send + 'static,
+            A::Result: Send + 'static,
+        {
+            crate::runtime::spawn(self.into_stream_forwarder(stream));
+        }
     }
 
     pub fn connected(&self) -> bool {
