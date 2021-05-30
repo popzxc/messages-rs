@@ -2,9 +2,9 @@ use std::sync::Arc;
 
 use crate::{
     context::{InputHandle, Signal},
-    envelope::{Envelope, EnvelopeProxy},
+    envelope::{Envelope, EnvelopeProxy, NotifyEnvelope},
     errors::SendError,
-    handler::Handler,
+    handler::{Handler, Notifiable},
     Actor,
 };
 use futures::{
@@ -69,12 +69,10 @@ impl<A> Address<A> {
 
     pub async fn notify<IN>(&mut self, message: IN) -> Result<(), SendError>
     where
-        A: Actor + Send + Handler<IN> + 'static,
+        A: Actor + Send + Notifiable<IN> + 'static,
         IN: Send + 'static,
-        A::Result: Send + 'static,
     {
-        let (sender, _receiver) = oneshot::channel();
-        let envelope: Envelope<A, IN> = Envelope::new(message, sender);
+        let envelope: NotifyEnvelope<A, IN> = NotifyEnvelope::new(message);
 
         let message = Box::new(envelope) as Box<dyn EnvelopeProxy<A> + Send + 'static>;
 

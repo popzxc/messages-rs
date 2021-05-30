@@ -3,7 +3,7 @@ use std::pin::Pin;
 use async_trait::async_trait;
 use futures::channel::oneshot;
 
-use crate::{Actor, Context, Handler};
+use crate::{handler::Notifiable, Actor, Context, Handler};
 
 #[async_trait]
 pub(crate) trait EnvelopeProxy<A: Actor + Unpin>: Send + 'static {
@@ -45,5 +45,38 @@ where
 
         let result = actor.get_mut().handle(message, context.get_mut()).await;
         let _ = response.send(result);
+    }
+}
+
+pub(crate) struct NotifyEnvelope<A: Notifiable<IN>, IN> {
+    message: Option<IN>,
+    _marker: std::marker::PhantomData<A>,
+}
+
+impl<A, IN> NotifyEnvelope<A, IN>
+where
+    A: Notifiable<IN>,
+{
+    pub(crate) fn new(message: IN) -> Self {
+        Self {
+            message: Some(message),
+            _marker: std::marker::PhantomData,
+        }
+    }
+}
+
+#[async_trait]
+impl<A, IN> EnvelopeProxy<A> for NotifyEnvelope<A, IN>
+where
+    A: Notifiable<IN> + Actor + Send + Unpin,
+    IN: Send + 'static,
+{
+    async fn handle(&mut self, actor: Pin<&mut A>, context: Pin<&mut Context<A>>) {
+        let message = self
+            .message
+            .take()
+            .expect("`Envelope::handle` called twice");
+
+        actor.get_mut().notify(message, context.get_mut()).await;
     }
 }

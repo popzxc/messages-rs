@@ -9,6 +9,7 @@ use std::{env, io, time::SystemTime};
 
 use async_trait::async_trait;
 use futures::{channel::mpsc, SinkExt, StreamExt};
+use handler::Notifiable;
 use messages::*;
 
 /// A payload with a counter
@@ -26,10 +27,8 @@ struct Node {
 impl Actor for Node {}
 
 #[async_trait]
-impl Handler<Payload> for Node {
-    type Result = ();
-
-    async fn handle(&mut self, msg: Payload, _ctx: &mut Context<Self>) {
+impl Notifiable<Payload> for Node {
+    async fn notify(&mut self, msg: Payload, _ctx: &mut Context<Self>) {
         if msg.0 >= self.limit {
             println!(
                 "Actor {} reached limit of {} (payload was {})",
@@ -103,7 +102,7 @@ async fn main() -> io::Result<()> {
         limit
     );
 
-    node.send(Payload(1)).await.unwrap();
+    node.notify(Payload(1)).await.unwrap();
 
     // We should wait for flow to be completed.
     calculated_receiver.next().await;
