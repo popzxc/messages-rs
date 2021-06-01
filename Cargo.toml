@@ -17,6 +17,7 @@ thiserror = "1.0"
 async-trait = "0.1"
 tokio = { version = "1.6", features = ["rt"], optional = true }
 async-std = { version = "1.9", optional = true }
+once_cell = { version = "1.7", optional = true }
 
 [dev-dependencies]
 tokio = { version = "1.6", features = ["full"] }
@@ -24,8 +25,8 @@ anyhow = "1.0"
 
 [features]
 default = ["runtime-tokio"] # TODO: Temporary for the development purposes!
-runtime-tokio = ["tokio"]
-runtime-async-std = ["async-std"]
+runtime-tokio = ["tokio", "once_cell"]
+runtime-async-std = ["async-std", "once_cell"]
 
 [package.metadata.docs.rs]
 features = ["runtime-tokio"]
