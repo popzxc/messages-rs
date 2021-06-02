@@ -78,7 +78,7 @@ impl<A> Address<A> {
     ///     // Implementation omitted.
     ///     # async fn handle(&mut self, (a, b): (u8, u8), context: &mut Context<Self>) -> u16 {
     ///     #    (a as u16) + (b as u16)
-    ///     #}
+    ///     # }
     /// }
     ///
     /// #[tokio::main]

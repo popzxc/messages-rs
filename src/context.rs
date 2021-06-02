@@ -20,6 +20,12 @@ pub struct Context<ACTOR> {
     stop_handle: Arc<Mutex<()>>,
 }
 
+impl<ACTOR> std::fmt::Debug for Context<ACTOR> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Context").finish()
+    }
+}
+
 impl<ACTOR> Default for Context<ACTOR>
 where
     ACTOR: 'static + Send + Actor + Unpin,
