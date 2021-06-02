@@ -8,7 +8,7 @@ use crate::{
     actor::Actor,
     cfg_runtime,
     context::{InputHandle, Signal},
-    envelope::{Envelope, EnvelopeProxy, NotifyEnvelope},
+    envelope::{EnvelopeProxy, MessageEnvelope, NotificationEnvelope},
     errors::SendError,
     handler::{Handler, Notifiable},
 };
@@ -97,7 +97,7 @@ impl<A> Address<A> {
         A::Result: Send + 'static,
     {
         let (sender, receiver) = oneshot::channel();
-        let envelope: Envelope<A, IN> = Envelope::new(message, sender);
+        let envelope: MessageEnvelope<A, IN> = MessageEnvelope::new(message, sender);
 
         let message = Box::new(envelope) as Box<dyn EnvelopeProxy<A> + Send + 'static>;
 
@@ -143,7 +143,7 @@ impl<A> Address<A> {
         A: Actor + Send + Notifiable<IN> + 'static,
         IN: Send + 'static,
     {
-        let envelope: NotifyEnvelope<A, IN> = NotifyEnvelope::new(message);
+        let envelope: NotificationEnvelope<A, IN> = NotificationEnvelope::new(message);
 
         let message = Box::new(envelope) as Box<dyn EnvelopeProxy<A> + Send + 'static>;
 

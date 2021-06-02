@@ -1,3 +1,24 @@
+//! Envelope is an entity capable of encapsulating the sent message
+//! together with a way to report the result back to the sender (if needed).
+//! It consists of two parts:
+//!
+//! - `EnvelopeProxy` trait that is being used by the `Context` to
+//!   pass the message to the actor (which is only accessable by
+//!   the `Context` itself).
+//! - `MessageEnvelope` and `NotificationEnvelope` structures that
+//!   actually have the message inside of them and implement `EnvelopeProxy`.
+//!
+//! The way it works is as follows:
+//!
+//! - User calls `Address::send` / `Address::notify` with a message that
+//!   can be handled by the corresponding `Actor` type.
+//! - `Address` creates an `*Envelope` object and converts it to the
+//!   `Box<dyn EnvelopeProxy>`. Information about the message type is now
+//!   elided and we can consider different messages to be of the same type.
+//! - This "envelope" is sent to the `Context` through a channel.
+//! - Once `Context` processes envelope, it creates `Pin`s to both itself
+//!   and `Actor` and calls `EnvelopeProxy::handle` to process the message.
+
 use std::pin::Pin;
 
 use async_trait::async_trait;
@@ -10,13 +31,13 @@ pub(crate) trait EnvelopeProxy<A: Actor + Unpin>: Send + 'static {
     async fn handle(&mut self, actor: Pin<&mut A>, context: Pin<&mut Context<A>>);
 }
 
-pub(crate) struct Envelope<A: Handler<IN>, IN> {
+pub(crate) struct MessageEnvelope<A: Handler<IN>, IN> {
     message: Option<IN>,
     response: Option<oneshot::Sender<A::Result>>,
     _marker: std::marker::PhantomData<A>,
 }
 
-impl<A, IN> Envelope<A, IN>
+impl<A, IN> MessageEnvelope<A, IN>
 where
     A: Handler<IN>,
 {
@@ -30,7 +51,7 @@ where
 }
 
 #[async_trait]
-impl<A, IN> EnvelopeProxy<A> for Envelope<A, IN>
+impl<A, IN> EnvelopeProxy<A> for MessageEnvelope<A, IN>
 where
     A: Handler<IN> + Actor + Send + Unpin,
     IN: Send + 'static,
@@ -48,12 +69,12 @@ where
     }
 }
 
-pub(crate) struct NotifyEnvelope<A: Notifiable<IN>, IN> {
+pub(crate) struct NotificationEnvelope<A: Notifiable<IN>, IN> {
     message: Option<IN>,
     _marker: std::marker::PhantomData<A>,
 }
 
-impl<A, IN> NotifyEnvelope<A, IN>
+impl<A, IN> NotificationEnvelope<A, IN>
 where
     A: Notifiable<IN>,
 {
@@ -66,7 +87,7 @@ where
 }
 
 #[async_trait]
-impl<A, IN> EnvelopeProxy<A> for NotifyEnvelope<A, IN>
+impl<A, IN> EnvelopeProxy<A> for NotificationEnvelope<A, IN>
 where
     A: Notifiable<IN> + Actor + Send + Unpin,
     IN: Send + 'static,
