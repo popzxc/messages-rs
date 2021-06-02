@@ -35,7 +35,8 @@ impl Registry {
             } else {
                 // Two or more services have a not unique name.
                 panic!(
-                    "Two or more services have a not unique name. Name is {}, attempt to retrieve the type {:?}, but stored type is {:?}",
+                    "Two or more services have a not unique name. \
+                    Name is {}, attempt to retrieve the type {:?}, but stored type is {:?}",
                     S::NAME,
                     TypeId::of::<Address<S>>(),
                     (&*maybe_addr).type_id()
