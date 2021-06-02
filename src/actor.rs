@@ -22,6 +22,18 @@ use crate::{address::Address, cfg_runtime, context::Context};
 ///   is finishing its execution and after this call `Actor` object will be
 ///   dropped.
 ///
+/// ## Stopping
+///
+/// Actor can stop in the following scenarios:
+///
+/// - All the [`Address`] objects connected to the actor were dropped.
+/// - [`Address::stop`] method was invoked.
+/// - Runtime in which [`Context`] is spawned was shutdown.
+///
+/// Note that if actor's address was obtained from the [`Registry`], it will
+/// never stop because of the first reason, as the address object will be
+/// stored inside of the registry.
+///
 /// ## Prerequisites
 ///
 /// As actors must be suitable for using in the multithreaded runtimes,
