@@ -1,20 +1,11 @@
 use std::{pin::Pin, sync::Arc};
 
 use crate::{actor::Actor, address::Address, cfg_runtime, envelope::EnvelopeProxy};
-use futures::{channel::mpsc, future::BoxFuture, lock::Mutex, FutureExt, StreamExt};
+use futures::{channel::mpsc, lock::Mutex, FutureExt, StreamExt};
 
+#[derive(Debug)]
 pub(crate) enum Signal {
     Stop,
-    ActorFuture(BoxFuture<'static, ()>),
-}
-
-impl std::fmt::Debug for Signal {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            Self::Stop => write!(f, "Signal::Stop"),
-            Self::ActorFuture(_) => write!(f, "Signal::ActorFuture"),
-        }
-    }
 }
 
 /// Default capacity for the mailbox.
@@ -27,7 +18,6 @@ pub struct Context<ACTOR> {
     signal_receiver: mpsc::Receiver<Signal>,
     address: Address<ACTOR>,
     stop_handle: Arc<Mutex<()>>,
-    actor_handle: Option<BoxFuture<'static, ()>>,
 }
 
 impl<ACTOR> Default for Context<ACTOR>
@@ -59,19 +49,11 @@ where
             signal_receiver,
             address,
             stop_handle,
-            actor_handle: None,
         }
     }
 
     pub fn address(&self) -> Address<ACTOR> {
         self.address.clone()
-    }
-
-    fn set_actor_handle(&mut self, actor_handle: BoxFuture<'static, ()>) {
-        if self.actor_handle.is_some() {
-            panic!("Actor handle is already initialized");
-        }
-        self.actor_handle = Some(actor_handle);
     }
 
     pub async fn run(mut self, mut actor: ACTOR) {
@@ -100,10 +82,9 @@ where
                 },
                 signal = self.signal_receiver.next() => {
                     match signal {
-                        Some(Signal::ActorFuture(fut)) => {
-                            self.set_actor_handle(fut);
-                        }
                         Some(Signal::Stop) | None => {
+                            // Notify actor about being stopped.
+                            actor.stopping().await;
                             running = false;
                         }
                     }
@@ -111,24 +92,14 @@ where
             }
         }
 
-        // Notify actor about being stopped.
-        actor.stopping().await;
-        // Wait for actor to stop itself.
-        if let Some(handle) = self.actor_handle {
-            handle.await;
-        }
         // Notify actor that it was fully stopped.
-        actor.stopped().await;
+        actor.stopped();
     }
 
     cfg_runtime! {
         pub fn spawn(self, actor: ACTOR) -> Address<ACTOR> {
             let address = self.address();
-            let mut address_copy = address.clone();
-            let handle = crate::runtime::spawn(self.run(actor)).boxed();
-            let _fut_handle = crate::runtime::spawn(async move {
-                address_copy.set_handle(handle).await;
-            });
+            let _handle = crate::runtime::spawn(self.run(actor)).boxed();
             address
         }
     }

@@ -10,7 +10,6 @@ use crate::{
 };
 use futures::{
     channel::{mpsc, oneshot},
-    future::BoxFuture,
     lock::Mutex,
     SinkExt, Stream, StreamExt,
 };
@@ -130,9 +129,5 @@ impl<A> Address<A> {
         while self.connected() {
             self.stop_handle.lock().await;
         }
-    }
-
-    pub(crate) async fn set_handle(&mut self, handle: BoxFuture<'static, ()>) {
-        let _ = self.signal_sender.send(Signal::ActorFuture(handle)).await;
     }
 }
