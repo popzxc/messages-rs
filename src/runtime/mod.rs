@@ -6,9 +6,10 @@
 )]
 mod runtime_impl;
 
-pub use runtime_impl::*;
+pub(crate) use runtime_impl::*;
 
 #[macro_export]
+#[doc(hidden)]
 macro_rules! cfg_runtime {
     ($($item:item)*) => {
         $(

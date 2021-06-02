@@ -1,3 +1,7 @@
+//! Context represents an environment in which actor is being executed.
+//!
+//! For details, see the [`Context`] documentation.
+
 use std::{pin::Pin, sync::Arc};
 
 use crate::{actor::Actor, address::Address, cfg_runtime, envelope::EnvelopeProxy};
@@ -13,6 +17,10 @@ pub const DEFAULT_CAPACITY: usize = 128;
 
 pub(crate) type InputHandle<A> = Box<dyn EnvelopeProxy<A> + Send + 'static>;
 
+/// `Context` represents an environment in which actor is being executed.
+///
+/// It is capable of transferring incoming messages to the actor, providing
+/// actor's address and managing it lifetime (e.g. stopping it).
 pub struct Context<ACTOR> {
     receiver: mpsc::Receiver<InputHandle<ACTOR>>,
     signal_receiver: mpsc::Receiver<Signal>,
@@ -39,10 +47,12 @@ impl<ACTOR> Context<ACTOR>
 where
     ACTOR: 'static + Send + Actor + Unpin,
 {
+    /// Creates a new `Context` object with default capacity.
     pub fn new() -> Self {
         Self::with_capacity(DEFAULT_CAPACITY)
     }
 
+    /// Creates a new `Context` object with custom capacity.
     pub fn with_capacity(capacity: usize) -> Self {
         let (sender, receiver) = mpsc::channel(capacity);
         let (signal_sender, signal_receiver) = mpsc::channel(capacity);
@@ -58,10 +68,16 @@ where
         }
     }
 
+    /// Returns an address of the actor.
     pub fn address(&self) -> Address<ACTOR> {
         self.address.clone()
     }
 
+    /// Starts the message handling routine.
+    ///
+    /// Future returned by this method should not normally be directly `await`ed,
+    /// but rather is expected to be used in some kind of `spawn` function of
+    /// the used runtime (e.g. `tokio::spawn` or `async_std::task::spawn`).
     pub async fn run(mut self, mut actor: ACTOR) {
         // Acquire the lock on the mutex so addresses can be used to `await` until
         // the actor is stopped.
@@ -103,6 +119,7 @@ where
     }
 
     cfg_runtime! {
+        /// Spawns an actor and returns its address.
         pub fn spawn(self, actor: ACTOR) -> Address<ACTOR> {
             let address = self.address();
             let _handle = crate::runtime::spawn(self.run(actor)).boxed();

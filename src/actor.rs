@@ -1,3 +1,7 @@
+//! Actor is an entity capable of receiving and processing messages.
+//!
+//! For details, see the [`Actor`] documentation.
+
 use async_trait::async_trait;
 
 use crate::{address::Address, cfg_runtime, context::Context};
