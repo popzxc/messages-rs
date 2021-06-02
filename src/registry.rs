@@ -33,6 +33,12 @@ pub trait Service: Actor + Default {
 /// already running. If so, address of this actor is returned. Otherwise,
 /// actor is spawned first.
 ///
+/// ## Stopping and resuming
+///
+/// Services managed by the `Registry` may still be stopped via the [`Address::stop`] method.
+/// In that case, actor will not be resumed automatically, but it will be started again
+/// if its adress will be requested one more time.
+///
 /// ## Examples
 ///
 /// # use messages::prelude::*;
