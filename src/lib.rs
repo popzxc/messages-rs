@@ -21,6 +21,8 @@
 //! thus it may be less suitable (or, more precisely, less efficient) for the partially
 //! sync context.
 //!
+//! [actix]: https://crates.io/crates/actix
+//!
 //! ## Which library should I choose?
 //!
 //! `actix` is a great, thoughtful, polished, and optimized library. If it is *possible*
@@ -34,7 +36,14 @@
 //! - You are seeking for the simpler interface and don't want to implement asynchronous code atop
 //!   of the initially sync interface.
 //!
-//! ## Example
+//! ## Asyncness
+//!
+//! In order to provide convenient interface, this crate uses [`async_trait`](https://docs.rs/async-trait/)
+//! to declare traits with `async` methods.
+//! To make the experience more convenient, `async_trait::async_trait` macro is publicly re-exported
+//! in the [`prelude`] module.
+//!
+//! ## Examples
 //!
 //! ### With runtime features
 //!
