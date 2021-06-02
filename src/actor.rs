@@ -5,6 +5,7 @@ use crate::{address::Address, cfg_runtime, context::Context};
 #[async_trait]
 pub trait Actor: Unpin + Send + Sync + Sized + 'static {
     async fn started(&self) {}
+    async fn stopping(&self) {}
     async fn stopped(&self) {}
 
     async fn run(self) {

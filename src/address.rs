@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{future::Future, sync::Arc};
 
 use crate::{
     actor::Actor,
@@ -10,6 +10,7 @@ use crate::{
 };
 use futures::{
     channel::{mpsc, oneshot},
+    future::BoxFuture,
     lock::Mutex,
     SinkExt, Stream, StreamExt,
 };
@@ -99,14 +100,14 @@ impl<A> Address<A> {
     }
 
     cfg_runtime! {
-        pub fn spawn_stream_forwarder<IN, S>(self, stream: S)
+        pub fn spawn_stream_forwarder<IN, S>(self, stream: S) -> impl Future<Output = Result<(), SendError>>
         where
             A: Actor + Send + Handler<IN> + 'static,
             S: Send + Stream<Item = IN> + Unpin + 'static,
             IN: Send + 'static,
             A::Result: Send + 'static,
         {
-            crate::runtime::spawn(self.into_stream_forwarder(stream));
+            crate::runtime::spawn(self.into_stream_forwarder(stream))
         }
     }
 
@@ -129,5 +130,9 @@ impl<A> Address<A> {
         while self.connected() {
             self.stop_handle.lock().await;
         }
+    }
+
+    pub(crate) async fn set_handle(&mut self, handle: BoxFuture<'static, ()>) {
+        let _ = self.signal_sender.send(Signal::ActorFuture(handle)).await;
     }
 }

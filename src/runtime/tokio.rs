@@ -1,10 +1,11 @@
 use std::future::Future;
 
-pub fn spawn<T>(task: T)
+use futures::FutureExt;
+
+pub fn spawn<T>(task: T) -> impl Future<Output = T::Output>
 where
     T: Future + Send + 'static,
     T::Output: Send + 'static,
 {
-    // TODO: Should we return the join handle?
-    tokio::spawn(task);
+    tokio::spawn(task).map(|res| res.expect("Unable to join future"))
 }
