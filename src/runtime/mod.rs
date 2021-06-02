@@ -13,6 +13,7 @@ macro_rules! cfg_runtime {
     ($($item:item)*) => {
         $(
             #[cfg(any(feature="runtime-tokio", runtime="runtime-async-std"))]
+            #[cfg_attr(docsrs, doc(cfg(any(feature="runtime-tokio", runtime="runtime-async-std"))))]
             $item
         )*
     }

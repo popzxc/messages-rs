@@ -1,3 +1,5 @@
+#![cfg_attr(docsrs, feature(doc_cfg))]
+
 pub mod prelude {
     pub use async_trait::async_trait;
 
