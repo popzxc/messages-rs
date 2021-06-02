@@ -7,7 +7,7 @@ pub mod prelude {
         actor::Actor,
         address::Address,
         context::Context,
-        errors::{ReceiveError, SendError},
+        errors::SendError,
         handler::{Handler, Notifiable},
     };
 }
