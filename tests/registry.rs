@@ -1,8 +1,4 @@
-use messages::{
-    prelude::{async_trait, Actor, Address, Context, Handler},
-    registry::Registry,
-    service::Service,
-};
+use messages::prelude::*;
 
 #[derive(Debug, Default)]
 struct PingActor;

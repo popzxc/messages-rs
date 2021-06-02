@@ -12,9 +12,18 @@ use std::{
 use futures::lock::Mutex;
 use once_cell::sync::Lazy;
 
-use crate::{prelude::Address, service::Service};
+use crate::prelude::{Actor, Address};
 
 static REGISTRY: Lazy<Registry> = Lazy::new(Registry::new);
+
+/// Extension of an [`Actor`] that can be managed by [`Registry`].
+pub trait Service: Actor + Default {
+    /// Service name.
+    ///
+    /// **Note:** All the service names must be unique. Having two services
+    /// with the same name may result in [`Registry::service`] function panic.
+    const NAME: &'static str;
+}
 
 /// `Registry` is an manager object providing access to the addresses
 /// of [`Actor`]s that implement [`Service`] trait.
@@ -91,7 +100,7 @@ impl Registry {
 
         // Address is either not in the registry or has been stopped.
         // We now have to spawn and store it in the registry.
-        let addr = S::start_service();
+        let addr = S::default().spawn();
         lock.insert(S::NAME, Box::new(addr.clone()));
 
         addr

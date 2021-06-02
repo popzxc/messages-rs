@@ -1,6 +1,7 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 
 pub mod prelude {
+    /// Convenience re-export of [`async_trait`](https://docs.rs/async-trait/) proc-macro.
     pub use async_trait::async_trait;
 
     pub use crate::{
@@ -10,6 +11,10 @@ pub mod prelude {
         errors::SendError,
         handler::{Handler, Notifiable},
     };
+
+    super::cfg_runtime! {
+        pub use crate::registry::{Service, Registry};
+    }
 }
 
 pub mod actor;
@@ -20,7 +25,6 @@ pub mod handler;
 
 cfg_runtime! {
     pub mod registry;
-    pub mod service;
 }
 
 mod envelope;
