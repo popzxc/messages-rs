@@ -21,6 +21,7 @@ once_cell = { version = "1.7", optional = true }
 
 [dev-dependencies]
 tokio = { version = "1.6", features = ["full"] }
+tokio-stream = { version = "0.1", features = ["time"] }
 anyhow = "1.0"
 criterion = { version = "0.3", features = ["async_tokio"] }
 
