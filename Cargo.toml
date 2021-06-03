@@ -22,11 +22,16 @@ once_cell = { version = "1.7", optional = true }
 [dev-dependencies]
 tokio = { version = "1.6", features = ["full"] }
 anyhow = "1.0"
+criterion = { version = "0.3", features = ["async_tokio"] }
 
 [features]
 default = ["runtime-tokio"] # TODO: Temporary for the development purposes!
 runtime-tokio = ["tokio", "once_cell"]
 runtime-async-std = ["async-std", "once_cell"]
+
+[[bench]]
+name = "bench"
+harness = false
 
 [package.metadata.docs.rs]
 features = ["runtime-tokio"]
