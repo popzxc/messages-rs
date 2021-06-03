@@ -3,7 +3,7 @@ use std::sync::{
     Arc,
 };
 
-use messages::prelude::{async_trait, Actor, Context, Handler};
+use messages::prelude::{async_trait, Actor, Context, Handler, RuntimeActorExt};
 
 mod registry;
 

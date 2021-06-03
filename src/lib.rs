@@ -142,6 +142,7 @@ pub mod prelude {
 
     super::cfg_runtime! {
         pub use crate::registry::{Service, Registry};
+        pub use crate::actor::RuntimeActorExt;
     }
 }
 

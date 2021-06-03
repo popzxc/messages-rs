@@ -176,21 +176,6 @@ impl<A> Address<A> {
         Ok(())
     }
 
-    cfg_runtime! {
-        /// Version of [`Address::into_stream_forwarder`] that automatically spawns the future.
-        ///
-        /// Returned future is the join handle of the spawned task, e.g. it can be awaited
-        /// if the user is interested in the moment when the stream stopped sending messages.
-        pub fn spawn_stream_forwarder<IN, S>(self, stream: S) -> impl Future<Output = Result<(), SendError>>
-        where
-            A: Actor + Send + Notifiable<IN> + 'static,
-            S: Send + Stream<Item = IN> + Unpin + 'static,
-            IN: Send + 'static,
-        {
-            crate::runtime::spawn(self.into_stream_forwarder(stream))
-        }
-    }
-
     /// Returns `true` if `Address` is still connected to the [`Actor`].
     pub fn connected(&self) -> bool {
         !self.sender.is_closed()
@@ -222,4 +207,21 @@ impl<A> Address<A> {
             self.stop_handle.lock().await;
         }
     }
+}
+
+cfg_runtime! {
+impl<A> Address<A> {
+    /// Version of [`Address::into_stream_forwarder`] that automatically spawns the future.
+    ///
+    /// Returned future is the join handle of the spawned task, e.g. it can be awaited
+    /// if the user is interested in the moment when the stream stopped sending messages.
+    pub fn spawn_stream_forwarder<IN, S>(self, stream: S) -> impl Future<Output = Result<(), SendError>>
+    where
+        A: Actor + Send + Notifiable<IN> + 'static,
+        S: Send + Stream<Item = IN> + Unpin + 'static,
+        IN: Send + 'static,
+    {
+        crate::runtime::spawn(self.into_stream_forwarder(stream))
+    }
+}
 }

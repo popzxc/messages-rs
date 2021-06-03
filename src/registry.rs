@@ -12,7 +12,7 @@ use std::{
 use futures::lock::Mutex;
 use once_cell::sync::Lazy;
 
-use crate::prelude::{Actor, Address};
+use crate::prelude::{Actor, Address, RuntimeActorExt};
 
 static REGISTRY: Lazy<Registry> = Lazy::new(Registry::new);
 

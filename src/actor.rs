@@ -47,6 +47,11 @@ use crate::{address::Address, cfg_runtime, context::Context};
 ///
 /// [static_lt]: https://doc.rust-lang.org/reference/types/trait-object.html#trait-object-lifetime-bounds
 ///
+/// ## Extensions
+///
+/// When one of the runtime features is enabled in this crate, there is also an extension trait available:
+/// [`RuntimeActorExt`], which provides more convenient interface for spawning actors, e.g. [`RuntimeActorExt::spawn`].
+///
 /// ## Examples
 ///
 /// This example assumes that `messages` is used with `rt-tokio` feature enabled.
@@ -118,26 +123,35 @@ pub trait Actor: Unpin + Send + Sync + Sized + 'static {
         let this = f(&mut context);
         context.run(this).await;
     }
+}
 
-    cfg_runtime! {
-        /// Spawns an actor using supported runtime.
-        ///
-        /// Returns an address of this actor.
-        fn spawn(self) -> Address<Self> {
-            Context::new().spawn(self)
-        }
-
-        /// Same as [`Actor::create_and_run`], but spawns
-        /// the future instead of returning it.
-        ///
-        /// Returns an address of this actor.
-        fn create_and_spawn<F>(f: F) -> Address<Self>
-        where
-            F: FnOnce(&mut Context<Self>) -> Self + Send,
-        {
-            let mut context = Context::new();
-            let this = f(&mut context);
-            context.spawn(this)
-        }
+cfg_runtime! {
+/// Extension trait for `Actor` providing more convenient interface when
+/// one of the runtime features is enabled.
+pub trait RuntimeActorExt: Actor {
+    /// Spawns an actor using supported runtime.
+    ///
+    /// Returns an address of this actor.
+    fn spawn(self) -> Address<Self> {
+        Context::new().spawn(self)
     }
+
+    /// Same as [`Actor::create_and_run`], but spawns
+    /// the future instead of returning it.
+    ///
+    /// Returns an address of this actor.
+    fn create_and_spawn<F>(f: F) -> Address<Self>
+    where
+        F: FnOnce(&mut Context<Self>) -> Self + Send,
+    {
+        let mut context = Context::new();
+        let this = f(&mut context);
+        context.spawn(this)
+    }
+}
+
+impl<T> RuntimeActorExt for T
+where
+    T: Actor
+{}
 }
