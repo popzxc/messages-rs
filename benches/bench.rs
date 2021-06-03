@@ -30,13 +30,16 @@ impl Notifiable<u8> for Ping {
 }
 
 pub fn criterion_benchmark(c: &mut Criterion) {
-    c.bench_function("Actor spawn", move |b| {
+    let mut g = c.benchmark_group("Actor workflow");
+    g.throughput(Throughput::Elements(1));
+
+    g.bench_function("Actor spawn", move |b| {
         b.to_async(runtime()).iter(|| async {
             let _ = black_box(Ping.spawn());
         })
     });
 
-    c.bench_function("Actor send message", move |b| {
+    g.bench_function("Actor send message", move |b| {
         b.to_async(runtime()).iter_with_setup(
             || Ping.spawn(),
             |mut addr| async move {
@@ -45,7 +48,7 @@ pub fn criterion_benchmark(c: &mut Criterion) {
         )
     });
 
-    c.bench_function("Actor notify", move |b| {
+    g.bench_function("Actor notify", move |b| {
         b.to_async(runtime()).iter_with_setup(
             || Ping.spawn(),
             |mut addr| async move {
@@ -53,6 +56,8 @@ pub fn criterion_benchmark(c: &mut Criterion) {
             },
         )
     });
+
+    g.finish();
 }
 
 criterion_group!(benches, criterion_benchmark);
