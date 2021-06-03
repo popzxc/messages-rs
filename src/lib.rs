@@ -50,11 +50,13 @@
 //! ```rust
 //! use messages::prelude::*;
 //!
-//! struct Example;
+//! struct Example; // Most of the types can be an actor.
 //!
+//! // While `Actor` implementation can be customized, it is not required.
 //! #[async_trait]
 //! impl Actor for Example {}
 //!
+//! // Message handler that calculated sum of two numbers.
 //! #[async_trait]
 //! impl Handler<(u8, u8)> for Example {
 //!     type Result = u16;
@@ -63,6 +65,7 @@
 //!     }
 //! }
 //!
+//! // Notification handler that calculated just writes received number to stdout.
 //! #[async_trait]
 //! impl Notifiable<u8> for Example {
 //!     async fn notify(&mut self, input: u8, context: &mut Context<Self>) {
@@ -104,6 +107,7 @@
 //!    let context = Context::new();
 //!    let mut addr = context.address();
 //!    let actor = Ping;
+//!    // Could've been any other runtime.
 //!    let mut task_handle = tokio::spawn(context.run(actor));
 //!    let result = addr.send(42).await.unwrap();
 //!    assert_eq!(result, 42);
