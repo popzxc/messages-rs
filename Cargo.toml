@@ -7,7 +7,7 @@ repository = "https://github.com/popzxc/messages-rs"
 documentation = "https://docs.rs/messages"
 readme = "README.md"
 license = "MIT"
-keywords = ["channels", "async", "actor", "utils"]
+keywords = ["channels", "async", "actor", "utils", "actors"]
 categories = ["rust-patterns"]
 description = "A midground between channels and actors."
 
@@ -15,6 +15,8 @@ description = "A midground between channels and actors."
 futures = "0.3.5"
 thiserror = "1.0"
 async-trait = "0.1"
+
+# Runtime section.
 tokio = { version = "1.6", features = ["rt"], optional = true }
 async-std = { version = "1.9", optional = true }
 once_cell = { version = "1.7", optional = true }
