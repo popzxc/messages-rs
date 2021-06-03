@@ -34,7 +34,7 @@ use crate::{address::Address, cfg_runtime, context::Context};
 /// - [`Address::stop`] method was invoked.
 /// - Runtime in which [`Context`] is spawned was shutdown.
 ///
-/// Note that if actor's address was obtained from the [`Registry`], it will
+/// Note that if actor's address was obtained from the [`Registry`](crate::prelude::Registry), it will
 /// never stop because of the first reason, as the address object will be
 /// stored inside of the registry.
 ///

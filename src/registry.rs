@@ -41,6 +41,7 @@ pub trait Service: Actor + Default {
 ///
 /// ## Examples
 ///
+/// ```rust
 /// # use messages::prelude::*;
 ///
 /// struct Ping;

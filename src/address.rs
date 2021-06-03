@@ -22,7 +22,7 @@ use futures::{
 ///
 /// Assuming that [`Actor`] is capable of processing messages of a certain
 /// type, the [`Address`] can be used to interact with [`Actor`] by using
-/// either [`Actor::send`] (for messages) or [`Actor::notify`] (for notifications).
+/// either [`Address::send`] (for messages) or [`Address::notify`] (for notifications).
 pub struct Address<A> {
     sender: mpsc::Sender<InputHandle<A>>,
     signal_sender: mpsc::Sender<Signal>,
@@ -177,7 +177,7 @@ impl<A> Address<A> {
     }
 
     cfg_runtime! {
-        /// Version of [`Address:into_stream_forwarder`] that automatically spawns the future.
+        /// Version of [`Address::into_stream_forwarder`] that automatically spawns the future.
         ///
         /// Returned future is the join handle of the spawned task, e.g. it can be awaited
         /// if the user is interested in the moment when the stream stopped sending messages.

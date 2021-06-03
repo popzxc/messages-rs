@@ -6,7 +6,7 @@
 //! - [`Notifiable`]: handler for notifications, e.g. messages that do not require response.
 //! - [`Handler`]: handler that produces some data as a response to the sent message.
 //!
-//! Note that [`Actor`] can implement both [`Notifiable`] and [`Handle`] traits in case
+//! Note that [`Actor`] can implement both [`Notifiable`] and [`Handler`] traits in case
 //! the calculated data is important for some modules, but not so much for others.
 //!
 //! [`Notifiable`] crate is generally more performant than [`Handler`] since it does not

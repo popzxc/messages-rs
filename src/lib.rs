@@ -112,6 +112,20 @@
 //!    task_handle.await.unwrap();
 //! }
 //! ```
+//!
+//! ## Main entities
+//!
+//! Main entites of this crate:
+//!
+//! - [`Actor`](crate::prelude::Actor): definition of an actor.
+//! - [`Context`](crate::prelude::Context): execution context for an actor.
+//! - [`Address`](crate::prelude::Address): address of an actor that is used to communicate with it.
+//! - Handler traits: [`Handler`](crate::prelude::Handler) and [`Notifiable`](crate::prelude::Notifiable).
+//!
+//! With runtime features enabled, there are also two more poings of interest:
+//!
+//! - [`Registry`](crate::prelude::Registry): Collection of independent, unique and named actors.
+//! - [`Service`](crate::prelude::Service): Actor that can be stored in the registry.
 
 /// Collection of the main types required to work with `messages` crate.
 pub mod prelude {
