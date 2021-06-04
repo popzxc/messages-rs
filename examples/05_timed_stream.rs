@@ -48,10 +48,10 @@ async fn main() -> Result<()> {
         .take(10)
         .map(|_| Notification);
 
-    let stream_fut = address.spawn_stream_forwarder(interval_stream);
+    let join_handle = address.spawn_stream_forwarder(interval_stream);
 
     // Wait until stream yielded all its values.
-    stream_fut.await.unwrap();
+    join_handle.await.unwrap().unwrap();
 
     Ok(())
 }

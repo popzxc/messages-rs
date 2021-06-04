@@ -5,7 +5,7 @@
 use std::{pin::Pin, sync::Arc};
 
 use crate::{actor::Actor, address::Address, cfg_runtime, envelope::EnvelopeProxy};
-use futures::{channel::mpsc, lock::Mutex, FutureExt, StreamExt};
+use futures::{channel::mpsc, lock::Mutex, StreamExt};
 
 #[derive(Debug)]
 pub(crate) enum Signal {
@@ -117,13 +117,20 @@ where
         // Notify actor that it was fully stopped.
         actor.stopped();
     }
+}
 
-    cfg_runtime! {
-        /// Spawns an actor and returns its address.
-        pub fn spawn(self, actor: ACTOR) -> Address<ACTOR> {
-            let address = self.address();
-            let _handle = crate::runtime::spawn(self.run(actor)).boxed();
-            address
-        }
+cfg_runtime! {
+use futures::FutureExt;
+
+impl<ACTOR> Context<ACTOR>
+where
+    ACTOR: 'static + Send + Actor + Unpin,
+{
+    /// Spawns an actor and returns its address.
+    pub fn spawn(self, actor: ACTOR) -> Address<ACTOR> {
+        let address = self.address();
+        let _handle = crate::runtime::spawn(self.run(actor)).boxed();
+        address
     }
+}
 }

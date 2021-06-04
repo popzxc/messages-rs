@@ -6,16 +6,21 @@
 )]
 mod runtime_impl;
 
-pub(crate) use runtime_impl::*;
-
 #[macro_export]
 #[doc(hidden)]
 macro_rules! cfg_runtime {
     ($($item:item)*) => {
         $(
-            #[cfg(any(feature="runtime-tokio", runtime="runtime-async-std"))]
-            #[cfg_attr(docsrs, doc(cfg(any(feature="runtime-tokio", runtime="runtime-async-std"))))]
+            #[cfg(any(feature="runtime-tokio", feature="runtime-async-std"))]
+            #[cfg_attr(docsrs, doc(cfg(any(feature="runtime-tokio", feature="runtime-async-std"))))]
             $item
         )*
     }
+}
+
+// TODO: Should add a `dynamic` runtime.
+
+cfg_runtime! {
+    pub use runtime_impl::JoinHandle;
+    pub(crate) use runtime_impl::*;
 }

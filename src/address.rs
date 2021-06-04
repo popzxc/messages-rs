@@ -2,7 +2,7 @@
 //!
 //! See [`Actor`] documentation for details.
 
-use std::{future::Future, sync::Arc};
+use std::sync::Arc;
 
 use crate::{
     actor::Actor,
@@ -215,7 +215,7 @@ impl<A> Address<A> {
     ///
     /// Returned future is the join handle of the spawned task, e.g. it can be awaited
     /// if the user is interested in the moment when the stream stopped sending messages.
-    pub fn spawn_stream_forwarder<IN, S>(self, stream: S) -> impl Future<Output = Result<(), SendError>>
+    pub fn spawn_stream_forwarder<IN, S>(self, stream: S) -> crate::runtime::JoinHandle<Result<(), SendError>>
     where
         A: Actor + Send + Notifiable<IN> + 'static,
         S: Send + Stream<Item = IN> + Unpin + 'static,

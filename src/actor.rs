@@ -4,7 +4,7 @@
 
 use async_trait::async_trait;
 
-use crate::{address::Address, cfg_runtime, context::Context};
+use crate::{cfg_runtime, context::Context};
 
 /// Actor is an entity capable of receiving and processing messages.
 ///
@@ -126,6 +126,8 @@ pub trait Actor: Unpin + Send + Sync + Sized + 'static {
 }
 
 cfg_runtime! {
+use crate::address::Address;
+
 /// Extension trait for `Actor` providing more convenient interface when
 /// one of the runtime features is enabled.
 pub trait RuntimeActorExt: Actor {
