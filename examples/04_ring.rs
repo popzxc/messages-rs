@@ -26,7 +26,7 @@ impl Actor for Node {}
 
 #[async_trait]
 impl Notifiable<Payload> for Node {
-    async fn notify(&mut self, msg: Payload, _ctx: &mut Context<Self>) {
+    async fn notify(&mut self, msg: Payload, _ctx: &Context<Self>) {
         if msg.0 >= self.limit {
             println!(
                 "Actor {} reached limit of {} (payload was {})",

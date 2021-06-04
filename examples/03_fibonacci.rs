@@ -13,7 +13,7 @@ impl Actor for FibonacciActor {}
 impl Handler<FibonacciRequest> for FibonacciActor {
     type Result = Result<u64, ()>;
 
-    async fn handle(&mut self, msg: FibonacciRequest, _: &mut Context<Self>) -> Self::Result {
+    async fn handle(&mut self, msg: FibonacciRequest, _: &Context<Self>) -> Self::Result {
         if msg.0 == 0 {
             Err(())
         } else if msg.0 == 1 {

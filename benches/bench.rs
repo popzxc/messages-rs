@@ -21,14 +21,14 @@ impl Actor for Ping {}
 impl Handler<u8> for Ping {
     type Result = u8;
 
-    async fn handle(&mut self, input: u8, _context: &mut Context<Self>) -> Self::Result {
+    async fn handle(&mut self, input: u8, _context: &Context<Self>) -> Self::Result {
         input
     }
 }
 
 #[async_trait]
 impl Notifiable<u8> for Ping {
-    async fn notify(&mut self, _input: u8, _context: &mut Context<Self>) {
+    async fn notify(&mut self, _input: u8, _context: &Context<Self>) {
         // Do nothing
     }
 }

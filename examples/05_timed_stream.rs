@@ -19,7 +19,7 @@ pub struct Notification;
 
 #[async_trait]
 impl Notifiable<Notification> for Service {
-    async fn notify(&mut self, _input: Notification, _: &mut Context<Self>) {
+    async fn notify(&mut self, _input: Notification, _: &Context<Self>) {
         println!(
             "Notified after {}ms",
             self.last_notified.elapsed().as_millis()

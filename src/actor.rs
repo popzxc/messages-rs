@@ -117,7 +117,7 @@ pub trait Actor: Unpin + Send + Sync + Sized + 'static {
     /// know its own address).
     async fn create_and_run<F>(f: F)
     where
-        F: FnOnce(&mut Context<Self>) -> Self + Send,
+        F: FnOnce(&Context<Self>) -> Self + Send,
     {
         let mut context = Context::new();
         let this = f(&mut context);
@@ -144,7 +144,7 @@ pub trait RuntimeActorExt: Actor {
     /// Returns an address of this actor.
     fn create_and_spawn<F>(f: F) -> Address<Self>
     where
-        F: FnOnce(&mut Context<Self>) -> Self + Send,
+        F: FnOnce(&Context<Self>) -> Self + Send,
     {
         let mut context = Context::new();
         let this = f(&mut context);

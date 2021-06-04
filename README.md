@@ -65,7 +65,7 @@ impl Actor for Example {}
 #[async_trait]
 impl Handler<(u8, u8)> for Example {
     type Result = u16;
-    async fn handle(&mut self, (a, b): (u8, u8), context: &mut Context<Self>) -> u16 {
+    async fn handle(&mut self, (a, b): (u8, u8), context: &Context<Self>) -> u16 {
         (a as u16) + (b as u16)
     }
 }
@@ -73,7 +73,7 @@ impl Handler<(u8, u8)> for Example {
 // Notification handler that calculated just writes received number to stdout.
 #[async_trait]
 impl Notifiable<u8> for Example {
-    async fn notify(&mut self, input: u8, context: &mut Context<Self>) {
+    async fn notify(&mut self, input: u8, context: &Context<Self>) {
         println!("Received number {}", input);
     }
 }
@@ -102,7 +102,7 @@ impl Actor for Ping {}
 #[async_trait]
 impl Handler<u8> for Ping {
     type Result = u8;
-    async fn handle(&mut self, input: u8, context: &mut Context<Self>) -> u8 {
+    async fn handle(&mut self, input: u8, context: &Context<Self>) -> u8 {
         input
     }
 }

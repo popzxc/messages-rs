@@ -93,7 +93,7 @@ where
                     match result {
                         Some(mut envelope) => {
                             let actor_pin = Pin::new(&mut actor);
-                            let self_pin = Pin::new(&mut self);
+                            let self_pin = Pin::new(&self);
                             envelope.handle(actor_pin, self_pin).await;
                         }
                         None => {

@@ -39,7 +39,7 @@ pub struct Request(pub u64);
 impl Handler<Request> for Service {
     type Result = u64;
 
-    async fn handle(&mut self, input: Request, _: &mut Context<Self>) -> u64 {
+    async fn handle(&mut self, input: Request, _: &Context<Self>) -> u64 {
         self.value + input.0
     }
 }
@@ -53,7 +53,7 @@ pub struct Notification(pub u64);
 // No response is expected.
 #[async_trait]
 impl Notifiable<Notification> for Service {
-    async fn notify(&mut self, input: Notification, _: &mut Context<Self>) {
+    async fn notify(&mut self, input: Notification, _: &Context<Self>) {
         self.value = input.0;
     }
 }

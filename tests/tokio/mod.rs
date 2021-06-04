@@ -18,7 +18,7 @@ impl Actor for PingActor {}
 impl Handler<u8> for PingActor {
     type Result = u8;
 
-    async fn handle(&mut self, input: u8, _: &mut Context<Self>) -> u8 {
+    async fn handle(&mut self, input: u8, _: &Context<Self>) -> u8 {
         input
     }
 }
@@ -60,7 +60,7 @@ impl Actor for WorkflowActor {
 impl Handler<()> for WorkflowActor {
     type Result = ();
 
-    async fn handle(&mut self, _input: (), _context: &mut Context<Self>) -> Self::Result {}
+    async fn handle(&mut self, _input: (), _context: &Context<Self>) -> Self::Result {}
 }
 
 #[tokio::test]

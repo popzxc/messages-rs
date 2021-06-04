@@ -76,7 +76,7 @@ impl<A> Address<A> {
     /// impl Handler<(u8, u8)> for Sum {
     ///     type Result = u16;
     ///     // Implementation omitted.
-    ///     # async fn handle(&mut self, (a, b): (u8, u8), context: &mut Context<Self>) -> u16 {
+    ///     # async fn handle(&mut self, (a, b): (u8, u8), context: &Context<Self>) -> u16 {
     ///     #    (a as u16) + (b as u16)
     ///     # }
     /// }
@@ -125,7 +125,7 @@ impl<A> Address<A> {
     ///
     /// #[async_trait]
     /// impl Notifiable<u8> for Ping {
-    ///     async fn notify(&mut self, input: u8, context: &mut Context<Self>) {
+    ///     async fn notify(&mut self, input: u8, context: &Context<Self>) {
     ///         println!("Received number {}", input);
     ///     }
     /// }
@@ -210,6 +210,12 @@ impl<A> Address<A> {
 }
 
 cfg_runtime! {
+
+use crate::{
+    handler::Coroutine,
+    envelope::CoroutineEnvelope
+};
+
 impl<A> Address<A> {
     /// Version of [`Address::into_stream_forwarder`] that automatically spawns the future.
     ///
@@ -222,6 +228,32 @@ impl<A> Address<A> {
         IN: Send + 'static,
     {
         crate::runtime::spawn(self.into_stream_forwarder(stream))
+    }
+
+
+    /// Sends a message to the [`Actor`] and receives the response.
+    /// Unlike in [`Address::send`], `calculate` supports parallel execution.
+    ///
+    /// ## Examples
+    ///
+    /// TODO
+    pub async fn calculate<IN>(&mut self, message: IN) -> Result<A::Result, SendError>
+    where
+        A: Actor + Send + Coroutine<IN> + 'static,
+        IN: Send + 'static,
+        A::Result: Send + 'static,
+    {
+        let (sender, receiver) = oneshot::channel();
+        let envelope: CoroutineEnvelope<A, IN> = CoroutineEnvelope::new(message, sender);
+
+        let message = Box::new(envelope) as Box<dyn EnvelopeProxy<A> + Send + 'static>;
+
+        self.sender
+            .send(message)
+            .await
+            .map_err(|_| SendError::ReceiverDisconnected)?;
+
+        receiver.await.map_err(|_| SendError::ReceiverDisconnected)
     }
 }
 }

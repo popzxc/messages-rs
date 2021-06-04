@@ -16,7 +16,7 @@ impl Actor for MyActor {}
 impl Handler<Ping> for MyActor {
     type Result = usize;
 
-    async fn handle(&mut self, msg: Ping, _: &mut Context<Self>) -> Self::Result {
+    async fn handle(&mut self, msg: Ping, _: &Context<Self>) -> Self::Result {
         self.count += msg.0;
         self.count
     }

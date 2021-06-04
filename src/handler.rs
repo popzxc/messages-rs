@@ -14,7 +14,10 @@
 
 use async_trait::async_trait;
 
-use crate::prelude::{Actor, Context};
+use crate::{
+    cfg_runtime,
+    prelude::{Actor, Context},
+};
 
 /// `Notifiable` is an extension trait for [`Actor`] that enables it
 /// to process notifications.
@@ -33,7 +36,7 @@ use crate::prelude::{Actor, Context};
 ///
 /// #[async_trait]
 /// impl Notifiable<u8> for Ping {
-///     async fn notify(&mut self, input: u8, context: &mut Context<Self>) {
+///     async fn notify(&mut self, input: u8, context: &Context<Self>) {
 ///         println!("Received number {}", input);
 ///     }
 /// }
@@ -49,7 +52,7 @@ use crate::prelude::{Actor, Context};
 #[async_trait]
 pub trait Notifiable<IN>: Sized + Actor {
     /// Processes notification.
-    async fn notify(&mut self, input: IN, context: &mut Context<Self>);
+    async fn notify(&mut self, input: IN, context: &Context<Self>);
 }
 
 /// `Notifiable` is an extension trait for [`Actor`] that enables it
@@ -71,7 +74,7 @@ pub trait Notifiable<IN>: Sized + Actor {
 /// impl Handler<(u8, u8)> for Sum {
 ///     type Result = u16;
 ///
-///     async fn handle(&mut self, (a, b): (u8, u8), context: &mut Context<Self>) -> u16 {
+///     async fn handle(&mut self, (a, b): (u8, u8), context: &Context<Self>) -> u16 {
 ///         (a as u16) + (b as u16)
 ///     }
 /// }
@@ -91,5 +94,26 @@ pub trait Handler<IN>: Sized + Actor {
     type Result;
 
     /// Processes a message.
-    async fn handle(&mut self, input: IN, context: &mut Context<Self>) -> Self::Result;
+    async fn handle(&mut self, input: IN, context: &Context<Self>) -> Self::Result;
+}
+
+cfg_runtime! {
+
+/// Alternative to [`Handler`] that allows parallel message processing.
+///
+/// By default, messages for an [`Actor`] are processed sequentially, thus efficiently
+/// will use a single core.
+///
+/// However, in some cases it makes more sense to allow parallel processing, if it's some
+/// kind of caluclation or an access to a shared resource.
+///
+/// TODO: Add examples
+#[async_trait]
+pub trait Coroutine<IN>: Sized + Actor + Clone {
+    /// Result of the message processing.
+    type Result;
+
+    /// Processes a message.
+    async fn calculate(self, input: IN) -> Self::Result;
+}
 }
