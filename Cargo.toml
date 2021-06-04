@@ -22,10 +22,16 @@ async-std = { version = "1.9", optional = true }
 once_cell = { version = "1.7", optional = true }
 
 [dev-dependencies]
+# Runtimes
 tokio = { version = "1.6", features = ["full"] }
+async-std = { version = "1.9", features = ["attributes"] }
+
+# Examples deps
 tokio-stream = { version = "0.1", features = ["time"] }
 anyhow = "1.0"
-criterion = { version = "0.3", features = ["async_tokio"] }
+
+# Benches
+criterion = { version = "0.3", features = ["async_tokio", "html_reports"] }
 
 [[bench]]
 name = "bench"
@@ -56,6 +62,10 @@ required-features = ["runtime-tokio"]
 [[example]]
 name = "05_timed_stream"
 required-features = ["runtime-tokio"]
+
+[[example]]
+name = "06_async_std"
+required-features = ["runtime-async-std"]
 
 [[test]]
 name = "tokio"
