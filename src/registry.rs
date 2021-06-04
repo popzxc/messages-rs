@@ -44,6 +44,7 @@ pub trait Service: Actor + Default {
 /// ```rust
 /// # use messages::prelude::*;
 ///
+/// #[derive(Default)] // Default trait is required for Registry to automatically creaate actor.
 /// struct Ping;
 ///
 /// #[async_trait]
@@ -56,7 +57,7 @@ pub trait Service: Actor + Default {
 ///
 /// #[tokio::main]
 /// async fn main() {
-///    let addr: Address<Ping> = Registry::service().await;
+///    let mut addr: Address<Ping> = Registry::service().await;
 ///    # addr.stop().await;
 ///    # addr.wait_for_stop().await;
 /// }

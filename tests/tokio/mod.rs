@@ -1,3 +1,5 @@
+//! Tests using tokio as the main executor.
+
 use std::sync::{
     atomic::{AtomicBool, Ordering},
     Arc,

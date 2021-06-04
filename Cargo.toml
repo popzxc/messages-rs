@@ -27,14 +27,40 @@ tokio-stream = { version = "0.1", features = ["time"] }
 anyhow = "1.0"
 criterion = { version = "0.3", features = ["async_tokio"] }
 
+[[bench]]
+name = "bench"
+required-features = ["runtime-tokio"]
+harness = false
+
 [features]
-default = ["runtime-tokio"] # TODO: Temporary for the development purposes!
+default = ["runtime-tokio"]
 runtime-tokio = ["tokio", "once_cell"]
 runtime-async-std = ["async-std", "once_cell"]
 
-[[bench]]
-name = "bench"
-harness = false
+[[example]]
+name = "01_ping"
+required-features = ["runtime-tokio"]
+
+[[example]]
+name = "02_notify"
+required-features = ["runtime-tokio"]
+
+[[example]]
+name = "03_fibonacci"
+required-features = ["runtime-tokio"]
+
+[[example]]
+name = "04_ring"
+required-features = ["runtime-tokio"]
+
+[[example]]
+name = "05_timed_stream"
+required-features = ["runtime-tokio"]
+
+[[test]]
+name = "tokio"
+path = "tests/tokio/mod.rs"
+required-features = ["runtime-tokio"]
 
 [package.metadata.docs.rs]
 features = ["runtime-tokio"]
