@@ -14,3 +14,9 @@ echo "---------------------------"
 echo "Running tests for async std"
 echo "---------------------------"
 cargo test --all-targets --no-default-features --features runtime-async-std || exit 1
+
+# Run examples without any features
+echo "--------------------------------------"
+echo "Running tests with no runtime features"
+echo "--------------------------------------"
+cargo test --examples --no-default-features || exit 1
