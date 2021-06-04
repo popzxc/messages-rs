@@ -1,16 +1,19 @@
+//! Example of actor used to calculate some stuff.
+//! In that case, fibonacci numbers.
+
 use messages::prelude::*;
 
-struct Fibonacci(pub u32);
+struct FibonacciRequest(pub u32);
 
-struct SyncActor;
+struct FibonacciActor;
 
-impl Actor for SyncActor {}
+impl Actor for FibonacciActor {}
 
 #[async_trait]
-impl Handler<Fibonacci> for SyncActor {
+impl Handler<FibonacciRequest> for FibonacciActor {
     type Result = Result<u64, ()>;
 
-    async fn handle(&mut self, msg: Fibonacci, _: &mut Context<Self>) -> Self::Result {
+    async fn handle(&mut self, msg: FibonacciRequest, _: &mut Context<Self>) -> Self::Result {
         if msg.0 == 0 {
             Err(())
         } else if msg.0 == 1 {
@@ -33,11 +36,11 @@ impl Handler<Fibonacci> for SyncActor {
 
 #[tokio::main]
 async fn main() {
-    let mut address = SyncActor.spawn();
+    let mut address = FibonacciActor.spawn();
 
     // send 5 messages
     for n in 5..10 {
-        println!("{:?}", address.send(Fibonacci(n)).await.unwrap());
+        println!("{:?}", address.send(FibonacciRequest(n)).await.unwrap());
     }
 
     address.stop().await;
