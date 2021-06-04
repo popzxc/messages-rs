@@ -4,7 +4,6 @@
 //! In this example, both `Handler` and `Notifiable` traits are implemented,
 //! as well as additional methods of an `Actor` trait.
 
-use anyhow::Result;
 use messages::prelude::*;
 
 #[derive(Debug, Default)]
@@ -66,7 +65,7 @@ impl Service {
 }
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() {
     // Start a service.
     let mut address = Service::new().spawn();
 
@@ -83,6 +82,4 @@ async fn main() -> Result<()> {
     address.wait_for_stop().await;
     // Ensure that actor is not running anymore.
     assert!(!address.connected());
-
-    Ok(())
 }

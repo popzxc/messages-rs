@@ -3,7 +3,6 @@
 
 use std::time::{Duration, Instant};
 
-use anyhow::Result;
 use futures::StreamExt;
 use messages::prelude::*;
 use tokio_stream::wrappers::IntervalStream;
@@ -38,7 +37,7 @@ impl Service {
 }
 
 #[tokio::main]
-async fn main() -> Result<()> {
+async fn main() {
     // Start a service.
     let address = Service::create().spawn();
 
@@ -52,6 +51,4 @@ async fn main() -> Result<()> {
 
     // Wait until stream yielded all its values.
     join_handle.await.unwrap().unwrap();
-
-    Ok(())
 }

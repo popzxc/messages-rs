@@ -28,8 +28,8 @@ async-std = { version = "1.9", features = ["attributes"] }
 smol = "1.2"
 
 # Examples deps
-tokio-stream = { version = "0.1", features = ["time"] }
-anyhow = "1.0"
+tokio-stream = { version = "0.1", features = ["time"] } # Stream examples
+tokio-tungstenite = "0.14" # WebSocket example
 
 # Benches
 criterion = { version = "0.3", features = ["async_tokio", "html_reports"] }
@@ -67,6 +67,12 @@ required-features = ["runtime-tokio"]
 [[example]]
 name = "06_async_std"
 required-features = ["runtime-async-std"]
+
+# `07_no_runtime` doesn't need runtime features.
+
+[[example]]
+name = "08_websocket"
+required-features = ["runtime-tokio"]
 
 [[test]]
 name = "tokio"
