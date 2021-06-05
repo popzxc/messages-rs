@@ -237,18 +237,19 @@ impl<A> Address<A> {
     /// ## Examples
     ///
     /// TODO
-    pub async fn calculate<IN>(&mut self, message: IN) -> Result<A::Result, SendError>
+    pub async fn calculate<IN>(&self, message: IN) -> Result<A::Result, SendError>
     where
         A: Actor + Send + Coroutine<IN> + 'static,
         IN: Send + 'static,
         A::Result: Send + 'static,
     {
+        let mut addr = self.sender.clone();
         let (sender, receiver) = oneshot::channel();
         let envelope: CoroutineEnvelope<A, IN> = CoroutineEnvelope::new(message, sender);
 
         let message = Box::new(envelope) as Box<dyn EnvelopeProxy<A> + Send + 'static>;
 
-        self.sender
+        addr
             .send(message)
             .await
             .map_err(|_| SendError::ReceiverDisconnected)?;

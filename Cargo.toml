@@ -30,6 +30,7 @@ smol = "1.2"
 # Examples deps
 tokio-stream = { version = "0.1", features = ["time"] } # Stream examples
 tokio-tungstenite = "0.14" # WebSocket example
+num_cpus = "1.13" # Fibonacci example
 
 # Benches
 criterion = { version = "0.3", features = ["async_tokio", "html_reports"] }
