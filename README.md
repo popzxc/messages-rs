@@ -40,6 +40,17 @@ However, if any of statements below apply to your use case, `messages` may be be
   and thus some threads may be underloaded in that case).
 - You are seeking for the simpler interface and don't want to implement asynchronous code atop
   of the initially sync interface.
+  
+**But what about [`xactor`](https://crates.io/crates/xactor)?**
+
+`xactor` is another good library inspired by Actix. It initially was built for [`async-std`] but
+then gained [`tokio`] support.
+
+Nonetheless, this library is not runtime-agnostic. It supports `async-std` and `tokio` v1, but
+is not (yet) compatible with another runtimes.
+
+That being said, this library initially serves different purpose: provide a way to implement
+actor workflow without having to think about supported runtimes.
 
 ## Asyncness
 
