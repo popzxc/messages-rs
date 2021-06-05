@@ -31,7 +31,6 @@ use crate::{
 ///
 /// ```rust
 /// # use messages::prelude::*;
-///
 /// struct Ping;
 ///
 /// #[async_trait]
@@ -70,7 +69,6 @@ pub trait Notifiable<IN>: Sized + Actor {
 ///
 /// ```rust
 /// # use messages::prelude::*;
-///
 /// struct Sum;
 ///
 /// #[async_trait]
@@ -113,7 +111,38 @@ cfg_runtime! {
 /// However, in some cases it makes more sense to allow parallel processing, if it's some
 /// kind of caluclation or an access to a shared resource.
 ///
-/// TODO: Add examples
+/// ## Examples
+///
+/// This example assumes that `messages` is used with `rt-tokio` feature enabled.
+///
+/// ```rust
+/// # use messages::prelude::*;
+/// #[derive(Clone)]
+/// struct Sum;
+///
+/// #[async_trait]
+/// impl Actor for Sum {}
+///
+/// #[async_trait]
+/// impl Coroutine<(u8, u8)> for Sum {
+///     type Result = u16;
+///
+///     // Note that in this impl the first argument is `self` rather than `&mut self`
+///     // and there is no `Context` argument.
+///     async fn calculate(self, (a, b): (u8, u8)) -> u16 {
+///         (a as u16) + (b as u16)
+///     }
+/// }
+///
+/// #[tokio::main]
+/// async fn main() {
+///    let mut addr = Sum.spawn();
+///    let result = addr.calculate((22, 20)).await.unwrap();
+///    assert_eq!(result, 42);
+///    # addr.stop().await;
+///    # addr.wait_for_stop().await;
+/// }
+/// ```
 #[async_trait]
 pub trait Coroutine<IN>: Sized + Actor + Clone {
     /// Result of the message processing.

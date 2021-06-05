@@ -236,7 +236,33 @@ impl<A> Address<A> {
     ///
     /// ## Examples
     ///
-    /// TODO
+    /// This example assumes that `messages` is used with `rt-tokio` feature enabled.
+    ///
+    /// ```rust
+    /// # use messages::prelude::*;
+    /// #[derive(Clone)]
+    /// struct Sum;
+    ///
+    /// #[async_trait]
+    /// impl Actor for Sum {}
+    ///
+    /// #[async_trait]
+    /// impl Coroutine<(u8, u8)> for Sum {
+    ///     type Result = u16;
+    ///     async fn calculate(self, (a, b): (u8, u8)) -> u16 {
+    ///         (a as u16) + (b as u16)
+    ///     }
+    /// }
+    ///
+    /// #[tokio::main]
+    /// async fn main() {
+    ///    let mut addr = Sum.spawn();
+    ///    let result = addr.calculate((22, 20)).await.unwrap();
+    ///    assert_eq!(result, 42);
+    ///    # addr.stop().await;
+    ///    # addr.wait_for_stop().await;
+    /// }
+    /// ```
     pub async fn calculate<IN>(&self, message: IN) -> Result<A::Result, SendError>
     where
         A: Actor + Send + Coroutine<IN> + 'static,
