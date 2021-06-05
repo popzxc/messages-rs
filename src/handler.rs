@@ -22,6 +22,9 @@ use crate::{
 /// `Notifiable` is an extension trait for [`Actor`] that enables it
 /// to process notifications.
 ///
+/// **Note:** Handler workflow guarantees that sent messages will be delivered in
+/// order.
+///
 /// ## Examples
 ///
 /// This example assumes that `messages` is used with `rt-tokio` feature enabled.
@@ -55,8 +58,11 @@ pub trait Notifiable<IN>: Sized + Actor {
     async fn notify(&mut self, input: IN, context: &Context<Self>);
 }
 
-/// `Notifiable` is an extension trait for [`Actor`] that enables it
+/// `Handler` is an extension trait for [`Actor`] that enables it
 /// to process messages and return results of the message processing.
+///
+/// **Note:** Handler workflow guarantees that sent messages will be delivered in
+/// order.
 ///
 /// ## Examples
 ///
