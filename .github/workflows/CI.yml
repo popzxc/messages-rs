@@ -78,11 +78,14 @@ jobs:
       - name: Install deadlinks
         run: cargo install cargo-deadlinks
 
-      - name: Cargo doc
-        run: cargo doc
+      - name: Cache cargo plugins
+        uses: actions/cache@v1
+        with:
+          path: ~/.cargo/bin/
+          key: ${{ runner.os }}-cargo-plugins
 
       - name: Run deadlinks
-        run: cargo deadlinks --dir target/doc/messages
+        run: cargo deadlinks
 
   test:
     name: Test
