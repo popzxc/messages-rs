@@ -105,8 +105,20 @@ jobs:
           command: build
           args: --examples --all
 
-      - name: Test
+      - name: Test / tokio
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --all
+          args: --all-targets --no-default-features --features runtime-tokio
+
+      - name: Test / async-std
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --all-targets --no-default-features --features runtime-async-std
+
+      - name: Test / no features
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --examples --no-default-features
