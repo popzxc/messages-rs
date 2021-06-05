@@ -1,19 +1,23 @@
 //! Example of actor used to calculate some stuff.
 //! In that case, fibonacci numbers.
+//!
+//! This example uses `Coroutine` trait that allows message handling to be executed
+//! in parallel.
 
 use messages::prelude::*;
 
 struct FibonacciRequest(pub u32);
 
+#[derive(Debug, Clone)]
 struct FibonacciActor;
 
 impl Actor for FibonacciActor {}
 
 #[async_trait]
-impl Handler<FibonacciRequest> for FibonacciActor {
+impl Coroutine<FibonacciRequest> for FibonacciActor {
     type Result = Result<u64, ()>;
 
-    async fn handle(&mut self, msg: FibonacciRequest, _: &Context<Self>) -> Self::Result {
+    async fn calculate(self, msg: FibonacciRequest) -> Self::Result {
         if msg.0 == 0 {
             Err(())
         } else if msg.0 == 1 {
@@ -40,7 +44,10 @@ async fn main() {
 
     // send 5 messages
     for n in 5..10 {
-        println!("{:?}", address.send(FibonacciRequest(n)).await.unwrap());
+        println!(
+            "{:?}",
+            address.calculate(FibonacciRequest(n)).await.unwrap()
+        );
     }
 
     address.stop().await;

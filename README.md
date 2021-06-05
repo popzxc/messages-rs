@@ -135,7 +135,19 @@ async fn main() {
 
 ### More
 
-More examples (e.g. example of attaching a stream to an actor) can be found in the [examples](./examples) directory.
+More examples can be found in the [examples](./examples) directory.
+
+List of currently provided examples:
+
+- [Ping](./examples/01_ping.rs): Simple ping actor without much of functionality.
+- [Notify](./examples/02_notify.rs): More verbose example showing capabilities of the actor interface.
+- [Fibonacci](./examples/03_fibonacci.rs): Example of a coroutine actor, i.e. one that can process messages in parallel.
+- [Ring](./examples/04_ring.rs): Ring benchmark, mostly copied from the corresponding `actix` example.
+- [Timed stream](./examples/05_timed_stream.rs): Example showing both how to attach stream to an actor and send timed notifications to it.
+- [`async-std`](./examples/06_async_std.rs): Version of the `Notify` example adapted for `async-std` runtime.
+- [`smol`](./examples/07_no_runtime.rs): Example of using a runtime not supported out of the box. In that case, `smol`.
+- [WebSocket](./examples/08_websocket.rs): Simple actor-based echo websocket server (and a client to play with it).
+
 
 ## Contributing
 
