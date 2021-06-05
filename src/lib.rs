@@ -145,10 +145,16 @@ pub mod prelude {
     };
 
     super::cfg_runtime! {
-        pub use crate::runtime::JoinHandle;
         pub use crate::registry::{Service, Registry};
         pub use crate::actor::RuntimeActorExt;
         pub use crate::handler::Coroutine;
+
+        /// Re-export of `JoinHandle` of chosen runtime.
+        #[cfg_attr(not(feature = "docsrs"), doc(hidden))]
+        // ^ Kludge: `cargo deadlinks` finds a broken link in the tokio docs,
+        // and currently it's not possible to ignore that error.
+        // However, we don't want to completely hide this element.
+        pub use crate::runtime::JoinHandle;
     }
 }
 

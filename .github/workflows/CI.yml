@@ -68,21 +68,10 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
 
-      - name: Install rust
-        uses: actions-rs/toolchain@v1
+      - uses: actions-rs/install@v0.1
         with:
-          toolchain: stable
-          profile: minimal
-          override: true
-
-      - name: Install deadlinks
-        run: cargo install cargo-deadlinks
-
-      - name: Cache cargo plugins
-        uses: actions/cache@v1
-        with:
-          path: ~/.cargo/bin/
-          key: ${{ runner.os }}-cargo-plugins
+          crate: cargo-deadlinks
+          use-tool-cache: true
 
       - name: Run deadlinks
         run: cargo deadlinks
