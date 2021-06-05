@@ -54,6 +54,10 @@ actor workflow without having to think about supported runtimes.
 
 ## Asyncness
 
+This library is async-first, meaning that everything is made with respect to asynchronous architecture.
+While in *some* cases synchronous interfaces could've been more performant, it'd make the interface much
+more bloated. If synchronous actor interface is preferred, consider using `actix`, as it provides one.
+
 In order to provide convenient interface, this crate uses [`async_trait`](https://docs.rs/async-trait/)
 to declare traits with `async` methods.
 To make the experience more convenient, `async_trait::async_trait` macro is publicly re-exported

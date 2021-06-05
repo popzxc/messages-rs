@@ -47,7 +47,7 @@ impl<ACTOR> Context<ACTOR>
 where
     ACTOR: 'static + Send + Actor + Unpin,
 {
-    /// Creates a new `Context` object with default capacity.
+    /// Creates a new `Context` object with default capacity (128 elements).
     pub fn new() -> Self {
         Self::with_capacity(DEFAULT_CAPACITY)
     }
