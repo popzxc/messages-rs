@@ -5,6 +5,8 @@
     missing_docs,
     unreachable_pub
 )]
+#![warn(clippy::pedantic)]
+#![allow(clippy::clippy::module_name_repetitions)]
 
 //! `messages` is a runtime-agnostic actor library.
 //!

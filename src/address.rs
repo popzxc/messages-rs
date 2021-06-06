@@ -90,6 +90,10 @@ impl<A> Address<A> {
     ///    # addr.wait_for_stop().await;  
     /// }
     /// ```
+    ///
+    /// ## Errors
+    ///
+    /// Will return an error in case associated actor stopped working.
     pub async fn send<IN>(&mut self, message: IN) -> Result<A::Result, SendError>
     where
         A: Actor + Send + Handler<IN> + 'static,
@@ -138,6 +142,10 @@ impl<A> Address<A> {
     ///    # addr.wait_for_stop().await;  
     /// }
     /// ```
+    ///
+    /// ## Errors
+    ///
+    /// Will return an error in case associated actor stopped working.
     pub async fn notify<IN>(&mut self, message: IN) -> Result<(), SendError>
     where
         A: Actor + Send + Notifiable<IN> + 'static,
@@ -164,6 +172,10 @@ impl<A> Address<A> {
     /// Future returned by this method should not normally be directly `await`ed,
     /// but rather is expected to be used in some kind of `spawn` function of
     /// the used runtime (e.g. `tokio::spawn` or `async_std::task::spawn`).
+    ///
+    /// ## Errors
+    ///
+    /// Will return an error in case associated actor stopped working.
     pub async fn into_stream_forwarder<IN, S>(mut self, mut stream: S) -> Result<(), SendError>
     where
         A: Actor + Send + Notifiable<IN> + 'static,
@@ -177,6 +189,7 @@ impl<A> Address<A> {
     }
 
     /// Returns `true` if `Address` is still connected to the [`Actor`].
+    #[must_use]
     pub fn connected(&self) -> bool {
         !self.sender.is_closed()
     }

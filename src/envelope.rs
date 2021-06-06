@@ -71,7 +71,7 @@ where
             .get_mut()
             .handle(message, Pin::into_inner(context))
             .await;
-        let _ = response.send(result);
+        drop(response.send(result));
     }
 }
 
@@ -151,7 +151,7 @@ cfg_runtime! {
             crate::runtime::spawn(async move {
 
                 let result = actor.calculate(message).await;
-                let _ = response.send(result);
+                drop(response.send(result));
             });
         }
     }

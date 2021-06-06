@@ -53,11 +53,13 @@ where
     ACTOR: 'static + Send + Actor + Unpin,
 {
     /// Creates a new `Context` object with default capacity (128 elements).
+    #[must_use]
     pub fn new() -> Self {
         Self::with_capacity(DEFAULT_CAPACITY)
     }
 
     /// Creates a new `Context` object with custom capacity.
+    #[must_use]
     pub fn with_capacity(capacity: usize) -> Self {
         let (sender, receiver) = mpsc::channel(capacity);
         let (signal_sender, signal_receiver) = mpsc::channel(capacity);
@@ -74,6 +76,7 @@ where
     }
 
     /// Returns an address of the actor.
+    #[must_use]
     pub fn address(&self) -> Address<ACTOR> {
         self.address.clone()
     }
@@ -84,6 +87,8 @@ where
     /// but rather is expected to be used in some kind of `spawn` function of
     /// the used runtime (e.g. `tokio::spawn` or `async_std::task::spawn`).
     pub async fn run(mut self, mut actor: ACTOR) {
+        #![allow(clippy::mut_mut)] // Warning is spawned because of `futures::select`.
+
         // Acquire the lock on the mutex so addresses can be used to `await` until
         // the actor is stopped.
         let stop_handle = self.stop_handle.clone();
@@ -117,7 +122,8 @@ where
                             }
                         }
                     }
-                }
+                },
+                complete => break,
             }
         }
 
