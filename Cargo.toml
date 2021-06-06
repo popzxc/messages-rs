@@ -13,7 +13,6 @@ description = "A midground between channels and actors."
 
 [dependencies]
 futures = "0.3.5"
-thiserror = "1.0"
 async-trait = "0.1"
 
 # Runtime section.
