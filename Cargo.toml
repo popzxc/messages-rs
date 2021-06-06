@@ -1,15 +1,15 @@
 [package]
 name = "messages"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Igor Aleksanov <popzxc@yandex.ru>"]
 edition = "2018"
 repository = "https://github.com/popzxc/messages-rs"
 documentation = "https://docs.rs/messages"
 readme = "README.md"
 license = "MIT"
-keywords = ["channels", "async", "actor", "utils", "actors"]
+keywords = ["async", "actor", "utils", "actors"]
 categories = ["rust-patterns"]
-description = "A midground between channels and actors."
+description = "Runtime-agnostic actor library."
 
 [dependencies]
 futures = "0.3.5"
