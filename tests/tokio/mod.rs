@@ -67,6 +67,23 @@ impl Handler<()> for WorkflowActor {
     async fn handle(&mut self, _input: (), _context: &Context<Self>) -> Self::Result {}
 }
 
+#[derive(Debug)]
+struct Unstoppable;
+
+#[async_trait]
+impl Actor for Unstoppable {
+    async fn stopping(&mut self) -> ActorAction {
+        ActorAction::KeepRunning
+    }
+}
+
+#[async_trait]
+impl Handler<()> for Unstoppable {
+    type Result = ();
+
+    async fn handle(&mut self, _input: (), _context: &Context<Self>) -> Self::Result {}
+}
+
 #[tokio::test]
 async fn basic_workflow() {
     let actor = PingActor;
@@ -108,4 +125,16 @@ async fn lifespan_methods() {
     assert!(state.started.load(Ordering::SeqCst));
     assert!(state.stopping.load(Ordering::SeqCst));
     assert!(state.stopped.load(Ordering::SeqCst));
+}
+
+#[tokio::test]
+async fn unstoppable() {
+    let mut address = Unstoppable.spawn();
+    address.stop().await;
+    tokio::time::sleep(std::time::Duration::from_millis(50)).await;
+    assert!(address.connected(), "Actor was shutdown");
+    address
+        .send(())
+        .await
+        .expect("Actor did not process the message");
 }
