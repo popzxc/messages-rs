@@ -28,6 +28,14 @@ sync context.
 
 [actix]: https://crates.io/crates/actix
 
+## Key features
+
+- Full runtime independence. Can be used with any possible runtime that can spawn futures.
+- Low dependencies amount. 2 mandatory dependencies and up to 1 optional runtime dependency.
+- Low amount of boilerplate without derive macros.
+- Good performance (close to raw channels).
+- Relevant (but sufficient) functionality only.
+
 ## Which library should I choose?
 
 `actix` is a great, thoughtful, polished, and optimized library. If it is *possible*
