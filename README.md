@@ -63,6 +63,13 @@ to declare traits with `async` methods.
 To make the experience more convenient, `async_trait::async_trait` macro is publicly re-exported
 in the [`prelude`] module.
 
+## Performance
+
+TL;DR: This library provides performance slightly worse that either `actix` (for asynchronous message handling)
+and raw channels, but not much.
+
+More details are presented in the [BENCHES.md](./BENCHES.md).
+
 ## Examples
 
 ### With runtime features
