@@ -45,8 +45,8 @@ However, if any of statements below apply to your use case, `messages` may be be
   
 **But what about [`xactor`](https://crates.io/crates/xactor)?**
 
-`xactor` is another good library inspired by Actix. It initially was built for [`async-std`] but
-then gained [`tokio`] support.
+`xactor` is another good library inspired by Actix. It initially was built for `async-std` but
+then gained `tokio` support.
 
 Nonetheless, this library is not runtime-agnostic. It supports `async-std` and `tokio` v1, but
 is not (yet) compatible with another runtimes.
