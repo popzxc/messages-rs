@@ -14,17 +14,11 @@
 `messages` is a runtime-agnostic actor library.
 
 It is heavily inspired by [`actix`][actix], a great actor framework.
-This library aims to solve two main issues with `actix`:
-`actix` is bound to the `actix-rt`, a custom tokio-based runtime.
 
 This crate can be used with any runtime, whether it popular or not.
 However, for the biggest one (`tokio` and `async-std`) there is an optional
 built-in support enabling more convenient interface (such as an automatic
 actor spawning).
-
-`messages` treats `async` and multi-threaded context as its main environment,
-thus it may be less suitable (or, more precisely, less efficient) for the partially
-sync context.
 
 [actix]: https://crates.io/crates/actix
 
@@ -77,6 +71,10 @@ TL;DR: This library provides performance slightly worse that either `actix` (for
 and raw channels, but not much.
 
 More details are presented in the [BENCHES.md](./BENCHES.md).
+
+*Note:* `messages` treats `async` and multi-threaded context as its main environment,
+thus it may be less suitable (or, more precisely, less efficient) for the partially
+sync context.
 
 ## Examples
 
