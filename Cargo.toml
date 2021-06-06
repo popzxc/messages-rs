@@ -1,6 +1,6 @@
 [package]
 name = "messages"
-version = "0.2.3"
+version = "0.2.4"
 authors = ["Igor Aleksanov <popzxc@yandex.ru>"]
 edition = "2018"
 repository = "https://github.com/popzxc/messages-rs"
@@ -81,3 +81,4 @@ required-features = ["runtime-tokio"]
 
 [package.metadata.docs.rs]
 features = ["runtime-tokio"]
+rustdoc-args = ["--cfg", "docsrs"]
