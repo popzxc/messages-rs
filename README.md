@@ -168,7 +168,7 @@ List of currently provided examples:
 
 ## Contributing
 
-All kind of contributions is really appreciated!
+All kinds of contributions are really appreciated!
 
 ## License
 
