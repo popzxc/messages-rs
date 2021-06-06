@@ -9,32 +9,13 @@
 //! `messages` is a runtime-agnostic actor library.
 //!
 //! It is heavily inspired by [`actix`][actix], a great actor framework.
-//! This library aims to solve two main issues with `actix`:
-//! `actix` is bound to the `actix-rt`, a custom tokio-based runtime.
 //!
 //! This crate can be used with any runtime, whether it popular or not.
 //! However, for the biggest one (`tokio` and `async-std`) there is an optional
 //! built-in support enabling more convenient interface (such as an automatic
 //! actor spawning).
 //!
-//! `messages` treats `async` and multi-threaded context as its main environment,
-//! thus it may be less suitable (or, more precisely, less efficient) for the partially
-//! sync context.
-//!
 //! [actix]: https://crates.io/crates/actix
-//!
-//! ## Which library should I choose?
-//!
-//! `actix` is a great, thoughtful, polished, and optimized library. If it is *possible*
-//! for you, you should consider it as the main option.
-//!
-//! However, if any of statements below apply to your use case, `messages` may be better:
-//!
-//! - You can't or don't want to stick to the Actix runtime.
-//! - Your tasks may not have the similar runtime expense (`actix-rt` does not have work stealing
-//!   and thus some threads may be underloaded in that case).
-//! - You are seeking for the simpler interface and don't want to implement asynchronous code atop
-//!   of the initially sync interface.
 //!
 //! ## Asyncness
 //!
@@ -126,10 +107,13 @@
 //! - [`Address`](crate::prelude::Address): address of an actor that is used to communicate with it.
 //! - Handler traits: [`Handler`](crate::prelude::Handler) and [`Notifiable`](crate::prelude::Notifiable).
 //!
-//! With runtime features enabled, there are also two more poings of interest:
+//! With runtime features enabled, there are also several more points of interest:
 //!
 //! - [`Registry`](crate::prelude::Registry): Collection of independent, unique and named actors.
 //! - [`Service`](crate::prelude::Service): Actor that can be stored in the registry.
+//! - [`Coroutine`](crate::prelude::Coroutine): Alternative to the `Handler` trait that allows
+//!   parallel message processing.
+//!
 
 /// Collection of the main types required to work with `messages` crate.
 pub mod prelude {
