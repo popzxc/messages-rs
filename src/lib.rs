@@ -136,7 +136,7 @@ pub mod prelude {
         pub use crate::handler::Coroutine;
 
         /// Re-export of `JoinHandle` of chosen runtime.
-        #[cfg_attr(not(feature = "docsrs"), doc(hidden))]
+        #[cfg_attr(not(docsrs), doc(hidden))]
         // ^ Kludge: `cargo deadlinks` finds a broken link in the tokio docs,
         // and currently it's not possible to ignore that error.
         // However, we don't want to completely hide this element.
