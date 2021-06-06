@@ -68,21 +68,13 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v2
 
-      - name: Install rust
-        uses: actions-rs/toolchain@v1
+      - uses: actions-rs/install@v0.1
         with:
-          toolchain: stable
-          profile: minimal
-          override: true
-
-      - name: Install deadlinks
-        run: cargo install cargo-deadlinks
-
-      - name: Cargo doc
-        run: cargo doc --no-deps
+          crate: cargo-deadlinks
+          use-tool-cache: true
 
       - name: Run deadlinks
-        run: cargo deadlinks --dir target/doc
+        run: cargo deadlinks
 
   test:
     name: Test
@@ -105,8 +97,20 @@ jobs:
           command: build
           args: --examples --all
 
-      - name: Test
+      - name: Test / tokio
         uses: actions-rs/cargo@v1
         with:
           command: test
-          args: --all
+          args: --all-targets --no-default-features --features runtime-tokio
+
+      - name: Test / async-std
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --all-targets --no-default-features --features runtime-async-std
+
+      - name: Test / no features
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --examples --no-default-features

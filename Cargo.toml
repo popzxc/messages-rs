@@ -1,20 +1,83 @@
 [package]
 name = "messages"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["Igor Aleksanov <popzxc@yandex.ru>"]
 edition = "2018"
 repository = "https://github.com/popzxc/messages-rs"
 documentation = "https://docs.rs/messages"
 readme = "README.md"
 license = "MIT"
-keywords = ["channels", "async", "actor", "utils"]
+keywords = ["channels", "async", "actor", "utils", "actors"]
 categories = ["rust-patterns"]
 description = "A midground between channels and actors."
 
 [dependencies]
 futures = "0.3.5"
-thiserror = "1.0"
-anyhow = "1.0"
+async-trait = "0.1"
+
+# Runtime section.
+tokio = { version = "1.6", features = ["rt"], optional = true }
+async-std = { version = "1.9", optional = true }
+once_cell = { version = "1.7", optional = true }
 
 [dev-dependencies]
-tokio = { version = "0.2.21", features = ["full"] }
+# Runtimes
+tokio = { version = "1.6", features = ["full"] }
+async-std = { version = "1.9", features = ["attributes"] }
+smol = "1.2"
+
+# Examples deps
+tokio-stream = { version = "0.1", features = ["time"] } # Stream examples
+tokio-tungstenite = "0.14" # WebSocket example
+num_cpus = "1.13" # Fibonacci example
+
+# Benches
+criterion = { version = "0.3", features = ["async_tokio", "html_reports"] }
+
+[[bench]]
+name = "bench"
+required-features = ["runtime-tokio"]
+harness = false
+
+[features]
+default = ["runtime-tokio"]
+runtime-tokio = ["tokio", "once_cell"]
+runtime-async-std = ["async-std", "once_cell"]
+
+[[example]]
+name = "01_ping"
+required-features = ["runtime-tokio"]
+
+[[example]]
+name = "02_notify"
+required-features = ["runtime-tokio"]
+
+[[example]]
+name = "03_fibonacci"
+required-features = ["runtime-tokio"]
+
+[[example]]
+name = "04_ring"
+required-features = ["runtime-tokio"]
+
+[[example]]
+name = "05_timed_stream"
+required-features = ["runtime-tokio"]
+
+[[example]]
+name = "06_async_std"
+required-features = ["runtime-async-std"]
+
+# `07_no_runtime` doesn't need runtime features.
+
+[[example]]
+name = "08_websocket"
+required-features = ["runtime-tokio"]
+
+[[test]]
+name = "tokio"
+path = "tests/tokio/mod.rs"
+required-features = ["runtime-tokio"]
+
+[package.metadata.docs.rs]
+features = ["runtime-tokio"]

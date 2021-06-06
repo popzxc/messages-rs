@@ -1,17 +1,16 @@
-use thiserror::Error;
+//! Errors that can occur during the actor interaction workflow.
 
 /// Errors that can occur while sending the message.
-#[derive(Debug, Error)]
+#[derive(Debug)]
 pub enum SendError {
-    #[error("Mailbox stopped accepting messages")]
+    /// Error emitted when it was attempted to send a message to the stopped actor.
     ReceiverDisconnected,
 }
 
-/// Errors that can occur while receiving the message.
-#[derive(Debug, Error)]
-pub enum ReceiveError {
-    #[error("All the senders have disconnected")]
-    AllSendersDisconnected,
-    #[error("Mailbox received stop request and no longer accepts incoming messages")]
-    Stopped,
+impl std::fmt::Display for SendError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "Actor does not accepting messages")
+    }
 }
+
+impl std::error::Error for SendError {}
