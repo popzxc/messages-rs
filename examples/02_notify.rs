@@ -23,6 +23,7 @@ impl Actor for Service {
     // to stop its execution.
     async fn stopping(&mut self) -> ActorAction {
         println!("Service is stopping");
+        // We could've ignored the stop request by returning `ActorAction::KeepRunning`.
         ActorAction::Stop
     }
 
