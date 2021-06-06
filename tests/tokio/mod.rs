@@ -5,7 +5,10 @@ use std::sync::{
     Arc,
 };
 
-use messages::prelude::{async_trait, Actor, Context, Handler, RuntimeActorExt};
+use messages::{
+    actor::ActorAction,
+    prelude::{async_trait, Actor, Context, Handler, RuntimeActorExt},
+};
 
 mod registry;
 
@@ -47,8 +50,9 @@ impl Actor for WorkflowActor {
         self.state.started.store(true, Ordering::SeqCst);
     }
 
-    async fn stopping(&mut self) {
+    async fn stopping(&mut self) -> ActorAction {
         self.state.stopping.store(true, Ordering::SeqCst);
+        ActorAction::Stop
     }
 
     fn stopped(&mut self) {

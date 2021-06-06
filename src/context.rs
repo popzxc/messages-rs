@@ -4,7 +4,12 @@
 
 use std::{pin::Pin, sync::Arc};
 
-use crate::{actor::Actor, address::Address, cfg_runtime, envelope::EnvelopeProxy};
+use crate::{
+    actor::{Actor, ActorAction},
+    address::Address,
+    cfg_runtime,
+    envelope::EnvelopeProxy,
+};
 use futures::{channel::mpsc, lock::Mutex, StreamExt};
 
 #[derive(Debug)]
@@ -106,8 +111,10 @@ where
                     match signal {
                         Some(Signal::Stop) | None => {
                             // Notify actor about being stopped.
-                            actor.stopping().await;
-                            running = false;
+                            if let ActorAction::Stop = actor.stopping().await {
+                                // Actor agreed to stop, so actually stop the loop.
+                                running = false;
+                            }
                         }
                     }
                 }

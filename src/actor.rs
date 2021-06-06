@@ -6,6 +6,18 @@ use async_trait::async_trait;
 
 use crate::{cfg_runtime, context::Context};
 
+/// Action to be performed after `Actor::stopping` is called.
+///
+/// In this method, actor can decide whether it will indeed stop
+/// or keep running.
+#[derive(Debug, Clone, Copy)]
+pub enum ActorAction {
+    /// Ignore stop request and keep running.
+    KeepRunning,
+    /// Stop.
+    Stop,
+}
+
 /// Actor is an entity capable of receiving and processing messages.
 ///
 /// Each actor runs in an associated [`Context`] object that is capable
@@ -30,13 +42,8 @@ use crate::{cfg_runtime, context::Context};
 ///
 /// Actor can stop in the following scenarios:
 ///
-/// - All the [`Address`] objects connected to the actor were dropped.
 /// - [`Address::stop`] method was invoked.
 /// - Runtime in which [`Context`] is spawned was shutdown.
-///
-/// Note that if actor's address was obtained from the [`Registry`](crate::prelude::Registry), it will
-/// never stop because of the first reason, as the address object will be
-/// stored inside of the registry.
 ///
 /// ## Prerequisites
 ///
@@ -96,8 +103,10 @@ pub trait Actor: Unpin + Send + Sync + Sized + 'static {
     /// all the [`Address`] objects will be dropped.
     ///
     /// It is guaranteed that after invocation of this method there will
-    /// be no messages passed to the actor.
-    async fn stopping(&mut self) {}
+    /// be no messages passed to the actor (unless `ActorAction::KeepRunning`).
+    async fn stopping(&mut self) -> ActorAction {
+        ActorAction::Stop
+    }
 
     /// Final notification about actor life end. Invoking this method
     /// will only be followed by the destruction of a [`Context`] object.

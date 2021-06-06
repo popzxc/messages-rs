@@ -137,7 +137,7 @@ pub mod prelude {
     pub use async_trait::async_trait;
 
     pub use crate::{
-        actor::Actor,
+        actor::{Actor, ActorAction},
         address::Address,
         context::Context,
         errors::SendError,
