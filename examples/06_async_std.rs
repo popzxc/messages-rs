@@ -23,8 +23,9 @@ impl Actor for Service {
 
     // `stopping` method will be invoked when the actor will be requested
     // to stop its execution.
-    async fn stopping(&mut self) {
+    async fn stopping(&mut self) -> ActorAction {
         println!("Service is stopping");
+        ActorAction::Stop
     }
 
     // `stopped` method will be invoked once actor is actually stopped.
