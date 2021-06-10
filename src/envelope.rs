@@ -35,7 +35,6 @@ pub(crate) trait EnvelopeProxy<A: Actor + Unpin>: Send + 'static {
 
 pub(crate) struct MessageEnvelope<A: Handler<IN>, IN> {
     data: Option<(IN, async_oneshot::Sender<A::Result>)>,
-    _marker: std::marker::PhantomData<A>,
 }
 
 impl<A, IN> MessageEnvelope<A, IN>
@@ -45,7 +44,6 @@ where
     pub(crate) fn new(message: IN, response: async_oneshot::Sender<A::Result>) -> Self {
         Self {
             data: Some((message, response)),
-            _marker: std::marker::PhantomData,
         }
     }
 }
@@ -109,7 +107,6 @@ cfg_runtime! {
 
     pub(crate) struct CoroutineEnvelope<A: Coroutine<IN>, IN> {
         data: Option<(IN, async_oneshot::Sender<A::Result>)>,
-        _marker: std::marker::PhantomData<A>,
     }
 
     impl<A, IN> CoroutineEnvelope<A, IN>
@@ -119,7 +116,6 @@ cfg_runtime! {
         pub(crate) fn new(message: IN, response: async_oneshot::Sender<A::Result>) -> Self {
             Self {
                 data: Some((message, response)),
-                _marker: std::marker::PhantomData,
             }
         }
     }
