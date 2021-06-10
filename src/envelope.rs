@@ -34,8 +34,7 @@ pub(crate) trait EnvelopeProxy<A: Actor + Unpin>: Send + 'static {
 }
 
 pub(crate) struct MessageEnvelope<A: Handler<IN>, IN> {
-    message: Option<IN>,
-    response: Option<async_oneshot::Sender<A::Result>>,
+    data: Option<(IN, async_oneshot::Sender<A::Result>)>,
     _marker: std::marker::PhantomData<A>,
 }
 
@@ -45,8 +44,7 @@ where
 {
     pub(crate) fn new(message: IN, response: async_oneshot::Sender<A::Result>) -> Self {
         Self {
-            message: Some(message),
-            response: Some(response),
+            data: Some((message, response)),
             _marker: std::marker::PhantomData,
         }
     }
@@ -60,11 +58,7 @@ where
     A::Result: Send + Sync + 'static,
 {
     async fn handle(&mut self, actor: Pin<&mut A>, context: Pin<&Context<A>>) {
-        let message = self
-            .message
-            .take()
-            .expect("`Envelope::handle` called twice");
-        let mut response = self.response.take().unwrap();
+        let (message, mut response) = self.data.take().expect("`Envelope::handle` called twice");
 
         let result = actor
             .get_mut()
@@ -114,8 +108,7 @@ cfg_runtime! {
     use crate::handler::Coroutine;
 
     pub(crate) struct CoroutineEnvelope<A: Coroutine<IN>, IN> {
-        message: Option<IN>,
-        response: Option<async_oneshot::Sender<A::Result>>,
+        data: Option<(IN, async_oneshot::Sender<A::Result>)>,
         _marker: std::marker::PhantomData<A>,
     }
 
@@ -125,8 +118,7 @@ cfg_runtime! {
     {
         pub(crate) fn new(message: IN, response: async_oneshot::Sender<A::Result>) -> Self {
             Self {
-                message: Some(message),
-                response: Some(response),
+                data: Some((message, response)),
                 _marker: std::marker::PhantomData,
             }
         }
@@ -141,14 +133,12 @@ cfg_runtime! {
     {
         async fn handle(&mut self, actor: Pin<&mut A>, _context: Pin<&Context<A>>) {
             let actor = Pin::into_inner(actor).clone();
-            let message = self
-                .message
+            let (message, mut response) = self
+                .data
                 .take()
                 .expect("`Envelope::handle` called twice");
-            let mut response = self.response.take().unwrap();
 
             crate::runtime::spawn(async move {
-
                 let result = actor.calculate(message).await;
                 let _ = response.send(result);
             });
