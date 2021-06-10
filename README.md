@@ -15,7 +15,7 @@
 
 It is heavily inspired by [`actix`][actix], a great actor framework.
 
-This crate can be used with any runtime, whether it popular or not.
+This crate can be used with any runtime, whether it's popular or not.
 However, for the biggest one (`tokio` and `async-std`) there is an optional
 built-in support enabling more convenient interface (such as an automatic
 actor spawning).
@@ -148,6 +148,9 @@ async fn main() {
 ### More
 
 More examples can be found in the [examples](./examples) directory.
+
+They are numbered and written in a manner so that the next example is always somewhat superior to the
+previous one. You can consider it to be a temporary alternative for a book (which is coming later).
 
 List of currently provided examples:
 
