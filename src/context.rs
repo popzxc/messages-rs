@@ -10,10 +10,11 @@ use crate::{
     cfg_runtime,
     envelope::EnvelopeProxy,
 };
-use futures::{channel::mpsc, lock::Mutex, StreamExt};
+use futures::{lock::Mutex, StreamExt};
 
 #[derive(Debug)]
-pub(crate) enum Signal {
+pub(crate) enum Signal<Msg> {
+    Message(Msg),
     Stop,
 }
 
@@ -27,8 +28,7 @@ pub(crate) type InputHandle<A> = Box<dyn EnvelopeProxy<A> + Send + 'static>;
 /// It is capable of transferring incoming messages to the actor, providing
 /// actor's address and managing it lifetime (e.g. stopping it).
 pub struct Context<ACTOR> {
-    receiver: mpsc::Receiver<InputHandle<ACTOR>>,
-    signal_receiver: mpsc::Receiver<Signal>,
+    receiver: async_channel::Receiver<Signal<InputHandle<ACTOR>>>,
     address: Address<ACTOR>,
     stop_handle: Arc<Mutex<()>>,
 }
@@ -61,15 +61,13 @@ where
     /// Creates a new `Context` object with custom capacity.
     #[must_use]
     pub fn with_capacity(capacity: usize) -> Self {
-        let (sender, receiver) = mpsc::channel(capacity);
-        let (signal_sender, signal_receiver) = mpsc::channel(capacity);
+        let (sender, receiver) = async_channel::bounded(capacity);
 
         let stop_handle = Arc::new(Mutex::new(()));
-        let address = Address::new(sender, signal_sender, stop_handle.clone());
+        let address = Address::new(sender, stop_handle.clone());
 
         Self {
             receiver,
-            signal_receiver,
             address,
             stop_handle,
         }
@@ -98,32 +96,19 @@ where
 
         let mut running = true;
         while running {
-            futures::select! {
-                result = self.receiver.next() => {
-                    match result {
-                        Some(mut envelope) => {
-                            let actor_pin = Pin::new(&mut actor);
-                            let self_pin = Pin::new(&self);
-                            envelope.handle(actor_pin, self_pin).await;
-                        }
-                        None => {
-                            // ALl senders disconnected, stopping.
-                            running = false;
-                        }
+            match self.receiver.next().await {
+                Some(Signal::Message(mut envelope)) => {
+                    let actor_pin = Pin::new(&mut actor);
+                    let self_pin = Pin::new(&self);
+                    envelope.handle(actor_pin, self_pin).await;
+                }
+                Some(Signal::Stop) | None => {
+                    // Notify actor about being stopped.
+                    if let ActorAction::Stop = actor.stopping().await {
+                        // Actor agreed to stop, so actually stop the loop.
+                        running = false;
                     }
-                },
-                signal = self.signal_receiver.next() => {
-                    match signal {
-                        Some(Signal::Stop) | None => {
-                            // Notify actor about being stopped.
-                            if let ActorAction::Stop = actor.stopping().await {
-                                // Actor agreed to stop, so actually stop the loop.
-                                running = false;
-                            }
-                        }
-                    }
-                },
-                complete => break,
+                }
             }
         }
 
