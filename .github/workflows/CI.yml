@@ -9,6 +9,7 @@ jobs:
   fmt:
     name: Rustfmt
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout sources
@@ -31,6 +32,7 @@ jobs:
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout sources
@@ -53,6 +55,7 @@ jobs:
   audit:
     name: Security audit
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v2
@@ -63,6 +66,7 @@ jobs:
   deadlinks:
     name: Deadlinks
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout sources
@@ -79,6 +83,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout sources
@@ -120,3 +125,35 @@ jobs:
         with:
           command: test
           args: --doc
+
+
+  examples:
+    name: Run examples
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v2
+
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --examples
+      
+      - run: cargo run --example 01_ping
+      - run: cargo run --example 02_notify
+      - run: cargo run --example 03_fibonacci
+      - run: cargo run --example 04_ring 10 10
+      - run: cargo run --example 05_timed_stream
+      - run: cargo run --no-default-features --features runtime-async-std --example 06_async_std
+      - run: cargo run --example 07_no_runtime
+      
