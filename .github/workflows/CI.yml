@@ -142,11 +142,17 @@ jobs:
           toolchain: stable
           profile: minimal
           override: true
+
+      - name: Build
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --examples
       
       - run: cargo run --example 01_ping
       - run: cargo run --example 02_notify
       - run: cargo run --example 03_fibonacci
-      - run: cargo run --release --example 04_ring
+      - run: cargo run --example 04_ring 10 10
       - run: cargo run --example 05_timed_stream
       - run: cargo run --no-default-features --features runtime-async-std --example 06_async_std
       - run: cargo run --example 07_no_runtime
