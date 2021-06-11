@@ -45,7 +45,7 @@ Time taken: 1.108587 seconds (3608196 msg/second)
 ### `messages`
 
 `cargo run --release --example 04_ring -- 2000 2000`
-Time taken: 1.281294 seconds (3121844 msg/second)
+Time taken: 0.940551 seconds (4252826 msg/second)
 
 ## Operations benchmark
 
@@ -54,16 +54,16 @@ Below you can find results for common operations of `messages`.
 ### `message` operations
 
 **Spawn**
-    time:   [1.3994 us **1.4246 us** 1.4495 us]
-    thrpt:  [689.87 Kelem/s **701.93 Kelem/s** 714.57 Kelem/s]
+    time:   [1.3477 us **1.3814 us** 1.4149 us]
+    thrpt:  [706.78 Kelem/s **723.92 Kelem/s** 741.99 Kelem/s]
 
-**Send message**
-    time:   [20.832 us **20.932 us** 21.041 us]
-    thrpt:  [47.525 Kelem/s **47.773 Kelem/s** 48.004 Kelem/s]
+**Send message**                                    
+    time:   [19.788 us **19.992 us** 20.255 us]
+    thrpt:  [49.371 Kelem/s **50.019 Kelem/s** 50.535 Kelem/s]
 
 **Notify**
-    time:   [450.44 ns **455.79 ns** 461.31 ns]
-    thrpt:  [2.1678 Melem/s **2.1940 Melem/s** 2.2200 Melem/s]
+    time:   [75.169 ns **76.816 ns** 78.467 ns]
+    thrpt:  [12.744 Melem/s **13.018 Melem/s** 13.303 Melem/s]
 
 
 ### Raw channels
