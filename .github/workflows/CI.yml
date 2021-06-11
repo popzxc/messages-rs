@@ -9,6 +9,7 @@ jobs:
   fmt:
     name: Rustfmt
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout sources
@@ -31,6 +32,7 @@ jobs:
   clippy:
     name: Clippy
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout sources
@@ -53,6 +55,7 @@ jobs:
   audit:
     name: Security audit
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v2
@@ -63,6 +66,7 @@ jobs:
   deadlinks:
     name: Deadlinks
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout sources
@@ -79,6 +83,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout sources
@@ -125,6 +130,7 @@ jobs:
   examples:
     name: Run examples
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Checkout sources
