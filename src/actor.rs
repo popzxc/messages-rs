@@ -74,8 +74,9 @@ pub enum ActorAction {
 ///         println!("Actor was started");
 ///     }
 ///
-///     async fn stopping(&mut self) {
+///     async fn stopping(&mut self) -> ActorAction {
 ///         println!("Actor is stopping");
+///         ActorAction::Stop
 ///     }
 ///
 ///     fn stopped(&mut self) {
