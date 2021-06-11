@@ -12,11 +12,7 @@ use crate::{
     errors::SendError,
     handler::{Handler, Notifiable},
 };
-use futures::{
-    channel::{mpsc, oneshot},
-    lock::Mutex,
-    SinkExt, Stream, StreamExt,
-};
+use futures::{lock::Mutex, Stream, StreamExt};
 
 /// `Address` is an object used to communicate with [`Actor`]s.
 ///
@@ -24,8 +20,7 @@ use futures::{
 /// type, the [`Address`] can be used to interact with [`Actor`] by using
 /// either [`Address::send`] (for messages) or [`Address::notify`] (for notifications).
 pub struct Address<A> {
-    sender: mpsc::Sender<InputHandle<A>>,
-    signal_sender: mpsc::Sender<Signal>,
+    sender: async_channel::Sender<Signal<InputHandle<A>>>,
     stop_handle: Arc<Mutex<()>>,
 }
 
@@ -39,7 +34,6 @@ impl<A> Clone for Address<A> {
     fn clone(&self) -> Self {
         Self {
             sender: self.sender.clone(),
-            signal_sender: self.signal_sender.clone(),
             stop_handle: self.stop_handle.clone(),
         }
     }
@@ -47,13 +41,11 @@ impl<A> Clone for Address<A> {
 
 impl<A> Address<A> {
     pub(crate) fn new(
-        sender: mpsc::Sender<InputHandle<A>>,
-        signal_sender: mpsc::Sender<Signal>,
+        sender: async_channel::Sender<Signal<InputHandle<A>>>,
         stop_handle: Arc<Mutex<()>>,
     ) -> Self {
         Self {
             sender,
-            signal_sender,
             stop_handle,
         }
     }
@@ -98,15 +90,15 @@ impl<A> Address<A> {
     where
         A: Actor + Send + Handler<IN> + 'static,
         IN: Send + 'static,
-        A::Result: Send + 'static,
+        A::Result: Send + Sync + 'static,
     {
-        let (sender, receiver) = oneshot::channel();
+        let (sender, receiver) = async_oneshot::oneshot();
         let envelope: MessageEnvelope<A, IN> = MessageEnvelope::new(message, sender);
 
         let message = Box::new(envelope) as Box<dyn EnvelopeProxy<A> + Send + 'static>;
 
         self.sender
-            .send(message)
+            .send(Signal::Message(message))
             .await
             .map_err(|_| SendError::ReceiverDisconnected)?;
 
@@ -156,7 +148,7 @@ impl<A> Address<A> {
         let message = Box::new(envelope) as Box<dyn EnvelopeProxy<A> + Send + 'static>;
 
         self.sender
-            .send(message)
+            .send(Signal::Message(message))
             .await
             .map_err(|_| SendError::ReceiverDisconnected)?;
 
@@ -204,7 +196,7 @@ impl<A> Address<A> {
     /// been stopped.
     pub async fn stop(&mut self) {
         // If actor is already stopped, we're fine with it.
-        let _ = self.signal_sender.send(Signal::Stop).await;
+        drop(self.sender.send(Signal::Stop).await);
     }
 
     /// Creates a future that waits for actor to be fully stopped.
@@ -280,16 +272,16 @@ impl<A> Address<A> {
     where
         A: Actor + Send + Coroutine<IN> + 'static,
         IN: Send + 'static,
-        A::Result: Send + 'static,
+        A::Result: Send + Sync + 'static,
     {
-        let mut addr = self.sender.clone();
-        let (sender, receiver) = oneshot::channel();
+        let addr = self.sender.clone();
+        let (sender, receiver) = async_oneshot::oneshot();
         let envelope: CoroutineEnvelope<A, IN> = CoroutineEnvelope::new(message, sender);
 
         let message = Box::new(envelope) as Box<dyn EnvelopeProxy<A> + Send + 'static>;
 
         addr
-            .send(message)
+            .send(Signal::Message(message))
             .await
             .map_err(|_| SendError::ReceiverDisconnected)?;
 

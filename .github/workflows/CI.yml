@@ -114,3 +114,9 @@ jobs:
         with:
           command: test
           args: --examples --no-default-features
+        
+      - name: Doc tests
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
+          args: --doc

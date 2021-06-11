@@ -14,6 +14,8 @@ description = "Runtime-agnostic actor library."
 [dependencies]
 futures = "0.3.5"
 async-trait = "0.1"
+async-channel = "1.6"
+async-oneshot = "0.5"
 
 # Runtime section.
 tokio = { version = "1.6", features = ["rt"], optional = true }

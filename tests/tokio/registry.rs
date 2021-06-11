@@ -24,6 +24,7 @@ async fn get_from_registry() {
     let response = address.send(10).await.unwrap();
     assert_eq!(response, 10);
     address.stop().await;
+    address.wait_for_stop().await;
 
     // Service must be restarted after stopping.
     let mut address: Address<PingActor> = Registry::service().await;
