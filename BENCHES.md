@@ -54,14 +54,17 @@ Below you can find results for common operations of `messages`.
 ### `message` operations
 
 **Spawn**
+
     time:   [1.3994 us **1.4246 us** 1.4495 us]
     thrpt:  [689.87 Kelem/s **701.93 Kelem/s** 714.57 Kelem/s]
 
 **Send message**
+
     time:   [20.832 us **20.932 us** 21.041 us]
     thrpt:  [47.525 Kelem/s **47.773 Kelem/s** 48.004 Kelem/s]
 
 **Notify**
+
     time:   [450.44 ns **455.79 ns** 461.31 ns]
     thrpt:  [2.1678 Melem/s **2.1940 Melem/s** 2.2200 Melem/s]
 
@@ -69,5 +72,6 @@ Below you can find results for common operations of `messages`.
 ### Raw channels
 
 **Send message (Raw channel)**
+
     time:   [19.540 us **19.632 us** 19.738 us]
     thrpt:  [50.663 Kelem/s **50.936 Kelem/s** 51.176 Kelem/s]
