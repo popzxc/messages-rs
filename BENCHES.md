@@ -55,23 +55,27 @@ Below you can find results for common operations of `messages`.
 
 **Spawn**
 
-    time:   [1.3477 us **1.3814 us** 1.4149 us]
-    thrpt:  [706.78 Kelem/s **723.92 Kelem/s** 741.99 Kelem/s]
+time:   [1.3477 us **1.3814 us** 1.4149 us]
+
+thrpt:  [706.78 Kelem/s **723.92 Kelem/s** 741.99 Kelem/s]
 
 **Send message**
               
-    time:   [19.788 us **19.992 us** 20.255 us]
-    thrpt:  [49.371 Kelem/s **50.019 Kelem/s** 50.535 Kelem/s]
+time:   [19.788 us **19.992 us** 20.255 us]
+
+thrpt:  [49.371 Kelem/s **50.019 Kelem/s** 50.535 Kelem/s]
 
 **Notify**
 
-    time:   [75.169 ns **76.816 ns** 78.467 ns]
-    thrpt:  [12.744 Melem/s **13.018 Melem/s** 13.303 Melem/s]
+time:   [75.169 ns **76.816 ns** 78.467 ns]
+
+thrpt:  [12.744 Melem/s **13.018 Melem/s** 13.303 Melem/s]
 
 
 ### Raw channels
 
 **Send message (Raw channel)**
 
-    time:   [19.540 us **19.632 us** 19.738 us]
-    thrpt:  [50.663 Kelem/s **50.936 Kelem/s** 51.176 Kelem/s]
+time:   [19.540 us **19.632 us** 19.738 us]
+
+thrpt:  [50.663 Kelem/s **50.936 Kelem/s** 51.176 Kelem/s]
