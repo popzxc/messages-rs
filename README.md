@@ -25,7 +25,7 @@ actor spawning).
 ## Key features
 
 - Full runtime independence. Can be used with any possible runtime that can spawn futures.
-- Low dependencies amount. 2 mandatory dependencies and up to 1 optional runtime dependency.
+- Low dependencies amount.
 - Low amount of boilerplate without derive macros.
 - Good performance (close to raw channels).
 - Relevant (but sufficient) functionality only.
@@ -62,14 +62,14 @@ more bloated. If synchronous actor interface is preferred, consider using `actix
 
 ## Performance
 
-TL;DR: This library provides performance slightly worse that either `actix` (for asynchronous message handling)
-and raw channels, but not much.
+TL;DR: This library provides performance that is better than in `actix` (for **asynchronous** message handling; 
+based on the ring benchmark used by `actix` itself) and is tied up to using `futures` channels.
 
 More details are presented in the [BENCHES.md](./BENCHES.md).
 
 *Note:* `messages` treats `async` and multi-threaded context as its main environment,
 thus it may be less suitable (or, more precisely, less efficient) for the partially
-sync context.
+sync context. For instance, the sync version of the ring benchmark is by 80% faster than this library.
 
 ## Examples
 
