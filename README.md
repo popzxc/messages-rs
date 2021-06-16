@@ -63,7 +63,7 @@ more bloated. If synchronous actor interface is preferred, consider using `actix
 ## Performance
 
 TL;DR: This library provides performance that is better than in `actix` (for **asynchronous** message handling; 
-based on the ring benchmark used by `actix` itself) and is tied up to using `futures` channels.
+based on the ring benchmark used by `actix` itself) and is tied with `futures` channels.
 
 More details are presented in the [BENCHES.md](./BENCHES.md).
 
