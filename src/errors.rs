@@ -9,7 +9,7 @@ pub enum SendError {
 
 impl std::fmt::Display for SendError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Actor does not accepting messages")
+        write!(f, "Actor has disconnected and is not accepting messages.")
     }
 }
 
