@@ -6,7 +6,9 @@
     unreachable_pub
 )]
 #![warn(clippy::pedantic)]
-#![allow(clippy::clippy::module_name_repetitions)]
+#![allow(clippy::module_name_repetitions)]
+// Seems to be broken right now: https://github.com/rust-lang/rust-clippy/issues/8300
+#![allow(clippy::no_effect_underscore_binding)]
 
 //! `messages` is a runtime-agnostic actor library.
 //!

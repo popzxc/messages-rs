@@ -116,6 +116,7 @@ async fn main() -> io::Result<()> {
     Ok(())
 }
 
+#[allow(clippy::redundant_closure)] // Generates false positive to `-> !` functions.
 fn parse_args() -> (usize, usize) {
     let mut args = env::args();
 
