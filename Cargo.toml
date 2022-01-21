@@ -1,6 +1,6 @@
 [package]
 name = "messages"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["Igor Aleksanov <popzxc@yandex.ru>"]
 edition = "2018"
 repository = "https://github.com/popzxc/messages-rs"
