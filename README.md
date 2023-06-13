@@ -84,7 +84,7 @@ struct Example; // Most of the types can be an actor.
 #[async_trait]
 impl Actor for Example {}
 
-// Message handler that calculated sum of two numbers.
+// Message handler that calculates sum of two numbers.
 #[async_trait]
 impl Handler<(u8, u8)> for Example {
     type Result = u16;
@@ -93,7 +93,7 @@ impl Handler<(u8, u8)> for Example {
     }
 }
 
-// Notification handler that calculated just writes received number to stdout.
+// Notification handler that just writes received number to stdout.
 #[async_trait]
 impl Notifiable<u8> for Example {
     async fn notify(&mut self, input: u8, context: &Context<Self>) {
